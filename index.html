@@ -161,3 +161,4 @@ size();addEventListener('resize',size);
 new IntersectionObserver((es)=>{const v=es[0].isIntersecting;if(v&&!run){run=true;last=performance.now();requestAnimationFrame(loop);if(first){first=false;[0,1,2].forEach(i=>setTimeout(()=>drop(i),400+i*350))}}else if(!v)run=false},{threshold:.1}).observe(cv)})();
 D.src.forEach(s=>$('#src').append(el('li',0,'<a href="'+s[1]+'" target="_blank" rel="noopener">'+s[0]+'</a>')));
 </script></body></html>
+

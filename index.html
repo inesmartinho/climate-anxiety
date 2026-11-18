@@ -863,10 +863,10 @@ function setSplit(k){
 }
 const placesEl=$('#places'),evEl=$('#evplaces');
 Object.entries(PL).sort((a,b)=>a[1].name.localeCompare(b[1].name)).forEach(([id,p])=>{
-  const b=document.createElement('button');b.type='button';b.className='pl';b.dataset.id=id;b.setAttribute('aria-pressed','false');b.textContent=p.name;b.onclick=()=>{selectPlace(id);showMaps()};placesEl.append(b);
+  const b=document.createElement('button');b.type='button';b.className='pl';b.dataset.id=id;b.setAttribute('aria-pressed','false');b.textContent=p.name;b.onclick=()=>{if(state.sel&&state.sel.type==='place'&&state.sel.place===id){state.sel=null;hidePick();renderPanel();syncPlaces();dirty=true;return}selectPlace(id);showMaps()};placesEl.append(b);
 });
 D.events.forEach(e=>{
-  const b=document.createElement('button');b.type='button';b.className='pl ev';b.dataset.ev=e.id;b.setAttribute('aria-pressed','false');b.textContent=e.label;b.onclick=()=>{selectEvent(e);showMaps()};evEl.append(b);
+  const b=document.createElement('button');b.type='button';b.className='pl ev';b.dataset.ev=e.id;b.setAttribute('aria-pressed','false');b.textContent=e.label;b.onclick=()=>{if(state.sel&&state.sel.type==='event'&&state.sel.e.id===e.id){state.sel=null;hidePick();renderPanel();syncPlaces();dirty=true;return}selectEvent(e);showMaps()};evEl.append(b);
 });
 const NC=new Set();D.auras.forEach(a=>{NC.add(a.place)});D.gaps.forEach(g=>NC.add(g.place));
 function syncPlaces(){

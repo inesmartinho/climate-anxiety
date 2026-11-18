@@ -320,8 +320,8 @@ const _lin={};const linOf=h=>_lin[h]||(_lin[h]=rgbOf(h).map(toLin));
 /* mix two colours in linear light, so orange into blue goes through purple, not grey */
 /* the higher the share, the stronger the colour: a low share is very pale, the colour deepens with the share, compared with the highest share for that feeling, so even small differences show */
 const FMAX={};D.auras.forEach(a=>a.layers.forEach(l=>{if(!(FMAX[l.f]>l.v))FMAX[l.f]=l.v}));
-const bgFor=(f,v)=>{const x=Math.min(1,Math.max(0,v/Math.max(FMAX[f]||60,15)));return hexMix(F[f].color,'#f2f2f2',.86-.4*x)};   // the unfilled part of a country is tinted more where the share is higher
-const strong=(c,v,f)=>{const x=Math.min(1,Math.max(0,v/Math.max(FMAX[f]||60,15))),d=Math.max(0,(x-.45)/.55);return mixHex('#f0f0f0',d>0?hexMix(c,'#0c0c28',.6*Math.min(1,d)):c,.5+.5*Math.pow(x,1.2))};
+const bgFor=(f,v)=>{const x=Math.min(1,Math.max(0,v/Math.max(FMAX[f]||60,15)));return hexMix(F[f].color,'#f2f2f2',.6-.3*x)};   // the unfilled part of a country is tinted more where the share is higher
+const strong=(c,v,f)=>{const x=Math.min(1,Math.max(0,v/Math.max(FMAX[f]||60,15))),d=Math.max(0,(x-.45)/.55);return mixHex('#f0f0f0',d>0?hexMix(c,'#0c0c28',.6*Math.min(1,d)):c,.88+.12*Math.pow(x,1.2))};
 const mixHex=(a,b,t)=>{const A=linOf(a),B=linOf(b);return 'rgb('+toSrgb(A[0]+(B[0]-A[0])*t)+','+toSrgb(A[1]+(B[1]-A[1])*t)+','+toSrgb(A[2]+(B[2]-A[2])*t)+')'};
 const _pat={};
 /* small repeating textures: adults over young people (dots), no figure (grey hatch), red areas (red hatch) */

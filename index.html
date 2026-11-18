@@ -172,7 +172,7 @@ ul.lim2{padding-left:18px;margin:0}ul.lim2 li{margin:0 0 9px;font-size:14.5px}
 .sheet.wstory .sin>.lab{font-size:13px;font-weight:600;letter-spacing:.1em;color:var(--ink);margin-bottom:10px}
 .sheet.wstory .sstep:not(.on) .sin>.lab{color:var(--mut)}
 .sbig{font-size:clamp(56px,8vw,92px);line-height:1;letter-spacing:-.03em;margin:.1em 0 .05em!important}
-.sbig small{font-size:13px;letter-spacing:.08em;text-transform:uppercase;margin-left:8px;color:var(--mut)}
+.hilo{margin:18px 0 0;padding:0}.hilo div{display:flex;gap:14px;border-top:1px solid var(--ink);padding:8px 0}.hilo dt{width:56px;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);margin:0;padding-top:2px}.hilo dd{margin:0;flex:1}.hilo dd span{float:right}.sbig small{font-size:13px;letter-spacing:.08em;text-transform:uppercase;margin-left:8px;color:var(--mut)}
 .sstep .fd{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:7px;vertical-align:-1px}
 @media(max-width:960px){.sheet.story .r-mid,.sheet.wstory .r-mid{display:block}.sheet.story .c-stage,.sheet.wstory .c-stage{position:sticky;top:0;z-index:5;background:var(--bg)}.sheet.story .c-stage .stage,.sheet.wstory .c-stage .stage{height:42vh;min-height:260px}.sheet.story .sstep,.sheet.wstory .sstep{min-height:64vh}}
 .wts{display:flex;flex-wrap:wrap;gap:6px}
@@ -1252,14 +1252,17 @@ let sSaved=null,sObs=null;
 function feelFacts(f){
   const as=D.auras.filter(a=>!a.splitDim&&a.layers.some(l=>l.f===f));
   let best=null;as.forEach(a=>a.layers.forEach(l=>{if(l.f===f&&(!best||l.v>best.l.v))best={a,l}}));
-  return {best,places:new Set(as.map(a=>a.place)).size};
+  const byP=new Map();as.forEach(a=>{if(a.pooled)return;a.layers.forEach(l=>{if(l.f!==f)return;const c=byP.get(a.place);if(!c||l.v>c.v)byP.set(a.place,{place:a.place,v:l.v,prov:l.prov,a})})});
+  const rk=[...byP.values()].sort((x,y)=>y.v-x.v);
+  return {best,places:new Set(as.map(a=>a.place)).size,top:rk[0],low:rk[rk.length-1],nrk:rk.length};
 }
 function storyHTML(){
   let h='<div class="story"><section class="sstep" data-i="0"><div class="sin"><p class="lab">Scroll</p><h2>What do people feel about a changing world?</h2><p>Solastalgia is the grief of watching your home change. This map gathers what published surveys have asked young people, university students and adults about climate change: whether they feel worried, afraid of the future, anxious, powerless, distressed, or hesitant to have children.</p></div></section>';
   STORY.forEach((f,i)=>{
     const fe=F[f],ft=feelFacts(f),b=ft.best;
     h+='<section class="sstep" data-i="'+(i+1)+'"><div class="sin"><p class="lab"><i class="fd" style="background:'+fe.color+'"></i>'+(i+1)+' of '+STORY.length+'</p><h2>'+esc(fe.name)+'</h2>'
-      +(b?'<p class="sbig" style="color:'+fe.color+'">'+pct(b.l.v)+(b.l.prov?'<small> provisional</small>':'')+'</p><p>'+esc(b.l.ind)+'</p>':'')+'</div></section>';
+      +(b?'<p class="sbig" style="color:'+fe.color+'">'+pct(b.l.v)+(b.l.prov?'<small> provisional</small>':'')+'</p><p>'+esc(b.l.ind)+'</p>':'')
+      +(ft.nrk>1?'<dl class="hilo"><div><dt>Most</dt><dd>'+esc(PL[ft.top.place].name)+' <span>'+pct(ft.top.v)+'</span></dd></div><div><dt>Least</dt><dd>'+esc(PL[ft.low.place].name)+' <span>'+pct(ft.low.v)+'</span></dd></div></dl>':'')+'</div></section>';
   });
   const nPl=new Set(D.auras.map(x=>x.place)).size;
   h+='<section class="sstep" data-i="'+(STORY.length+1)+'"><div class="sin"><p class="lab">Where nobody has asked</p><h2>An empty place is not a calm place</h2><p>Here are only the places with no figure at all. The surveys behind this map give figures for '+nPl+' places. The dark dots are the land where nobody has published a comparable number.</p><p>No data does not mean people there feel nothing. It means the question was never asked, or the answer is not public. Many of these places are among the most exposed to climate change, so the silence on the map says something about who gets asked, and who does not.</p><p class="wm">Turn the globe to see how much of it is dark. Use the button under the globe to bring back the countries that have data.</p></div></section>';

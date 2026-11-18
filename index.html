@@ -329,8 +329,8 @@ const rgbOf=h=>_rgb[h]||(_rgb[h]=(n=>[n>>16,(n>>8)&255,n&255])(parseInt(h.slice(
 const toLin=c=>{c/=255;return c<=.04045?c/12.92:Math.pow((c+.055)/1.055,2.4)},toSrgb=c=>Math.round(255*(c<=.0031308?12.92*c:1.055*Math.pow(c,1/2.4)-.055));
 const _lin={};const linOf=h=>_lin[h]||(_lin[h]=rgbOf(h).map(toLin));
 /* mix two colours in linear light, so orange into blue goes through purple, not grey */
-/* the higher the share, the stronger the colour: a low share is pale, 75% or more is the full colour */
-const strong=(c,v)=>mixHex('#ececec',c,.3+.7*Math.min(1,Math.max(0,v/75)));
+/* the higher the share, the stronger the colour: a low share is very pale, around 70% is the full colour, and the highest shares go deeper still */
+const strong=(c,v)=>{const x=Math.min(1,Math.max(0,v/70)),d=Math.max(0,(v-55)/45);return mixHex('#efefef',d>0?hexMix(c,'#10102a',.4*Math.min(1,d)):c,.1+.9*Math.pow(x,1.25))};
 const mixHex=(a,b,t)=>{const A=linOf(a),B=linOf(b);return 'rgb('+toSrgb(A[0]+(B[0]-A[0])*t)+','+toSrgb(A[1]+(B[1]-A[1])*t)+','+toSrgb(A[2]+(B[2]-A[2])*t)+')'};
 const _pat={};
 /* small repeating textures: adults over young people (dots), no figure (grey hatch), red areas (red hatch) */

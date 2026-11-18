@@ -1259,8 +1259,7 @@ function storyHTML(){
   STORY.forEach((f,i)=>{
     const fe=F[f],ft=feelFacts(f),b=ft.best;
     h+='<section class="sstep" data-i="'+(i+1)+'"><div class="sin"><p class="lab"><i class="fd" style="background:'+fe.color+'"></i>'+(i+1)+' of '+STORY.length+'</p><h2>'+esc(fe.name)+'</h2>'
-      +(b?'<p class="sbig" style="color:'+fe.color+'">'+pct(b.l.v)+(b.l.prov?'<small> provisional</small>':'')+'</p><p>'+esc(b.l.ind)+'</p><p class="wm">The largest share in the data: '+esc(b.a.who||POPN[b.a.pop])+(b.a.pooled&&b.a.n?', '+esc(b.a.n):' · '+esc(PL[b.a.place].name))+'.</p>':'')
-      +'<p>'+esc(fe.gloss.charAt(0).toUpperCase()+fe.gloss.slice(1))+'.</p><p class="wm">A figure exists for '+ft.places+(ft.places===1?' place':' places')+'. Compare percentages only within one survey.</p></div></section>';
+      +(b?'<p class="sbig" style="color:'+fe.color+'">'+pct(b.l.v)+(b.l.prov?'<small> provisional</small>':'')+'</p><p>'+esc(b.l.ind)+'</p>':'')+'</div></section>';
   });
   const nPl=new Set(D.auras.map(x=>x.place)).size;
   h+='<section class="sstep" data-i="'+(STORY.length+1)+'"><div class="sin"><p class="lab">Where nobody has asked</p><h2>An empty place is not a calm place</h2><p>Here are only the places with no figure at all. The surveys behind this map give figures for '+nPl+' places. The dark dots are the land where nobody has published a comparable number.</p><p>No data does not mean people there feel nothing. It means the question was never asked, or the answer is not public. Many of these places are among the most exposed to climate change, so the silence on the map says something about who gets asked, and who does not.</p><p class="wm">Turn the globe to see how much of it is dark. Use the button under the globe to bring back the countries that have data.</p></div></section>';

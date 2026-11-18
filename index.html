@@ -298,14 +298,6 @@ ul.lim2{padding-left:18px;margin:0}ul.lim2 li{margin:0 0 9px;font-size:14.5px}
     </details>
   </div>
 
-  <div class="rw r-two" style="grid-template-columns:minmax(0,1fr)">
-    <div class="cell blk">
-
-  <h2>Sources</h2>
-  <ul class="src" id="srcs"></ul>
-
-    </div>
-  </div>
 </div>
 </main>
 
@@ -969,7 +961,7 @@ detail.addEventListener('click',e=>{if(e.target.closest('[data-act=clear]')){sta
   D.auras.filter(a=>a.id==='CH-youth'||a.id==='US-adults').forEach(a=>{add(a.src,a.srcname);add(a.src2,a.src2name)});
   D.auras.filter(a=>a.prov||a.pop==='students').forEach(a=>{add(a.src,a.srcname);add(a.src2,a.src2name);add(a.src3,a.src3name);add(a.src4,a.src4name)});D.gaps.forEach(g=>{add(g.src,g.srcname);add(g.src2,g.src2name)});
   D.events.forEach(e=>{add(e.src,e.label);add(e.src2,e.label+' (second source)')});
-  $('#srcs').innerHTML=srcs.join('');
+  
 })();
 
 /* ---------- one map per feeling ---------- */

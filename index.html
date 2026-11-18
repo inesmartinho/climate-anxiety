@@ -746,7 +746,8 @@ function frame(now){
 }
 
 /* ---------- interaction ---------- */
-function stopSpin(){if(state.spin){state.spin=false;$('#spin').setAttribute('aria-pressed','false')}$('#hint').style.opacity=0}
+let spinOff=false;   // the globe keeps turning unless someone presses the spin button to stop it
+function stopSpin(){$('#hint').style.opacity=0}
 function xy(e){const r=cv.getBoundingClientRect();return {x:e.clientX-r.left,y:e.clientY-r.top}}
 function inHit(h,p){
   if(h.polys){
@@ -859,7 +860,7 @@ function syncPlaces(){
   placesEl.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(!!(state.sel&&state.sel.type==='place'&&state.sel.place===b.dataset.id))));
   evEl.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(!!(state.sel&&state.sel.type==='event'&&state.sel.e.id===b.dataset.ev))));
 }
-$('#spin').onclick=()=>{state.spin=!state.spin;$('#spin').setAttribute('aria-pressed',String(state.spin));if(state.spin){target=null;$('#hint').style.opacity=0}dirty=true};
+$('#spin').onclick=()=>{state.spin=!state.spin;spinOff=!state.spin;$('#spin').setAttribute('aria-pressed',String(state.spin));if(state.spin){target=null;$('#hint').style.opacity=0}dirty=true};
 $('#evt').onclick=()=>{state.events=!state.events;$('#evt').setAttribute('aria-pressed',String(state.events));$('#evplaces').hidden=$('#evlab').hidden=!state.events;if(!state.events&&state.sel&&state.sel.type==='event')state.sel=null;refreshMinis();renderPanel();syncPlaces();dirty=true};
 function shapePath(key,box,s){
   const sh=SH[key],k=Math.cos(sh.c[1]*rad);let x0=1e9,x1=-1e9,y0=1e9,y1=-1e9;
@@ -1153,6 +1154,7 @@ function setMode(m){
   if(m===state.mode)return;
   const from=state.mode;
   if(from==='story'||from==='wstory')endStory();
+  if(!reduce&&!spinOff){state.spin=true;$('#spin').setAttribute('aria-pressed','true')}
   state.mode=m;state.sel=null;stopPlay();
   const sh=$('.sheet');sh.classList.toggle('words',m==='words'||m==='wstory');sh.classList.toggle('story',m==='story');sh.classList.toggle('wstory',m==='wstory');
   $('#modeseg').querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.mode===m)));

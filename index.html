@@ -152,7 +152,8 @@ ul.lim2{padding-left:18px;margin:0}ul.lim2 li{margin:0 0 9px;font-size:14.5px}
 @media(max-width:560px){.key{grid-template-columns:minmax(0,1fr)}.zoom button{width:34px;height:34px}.zoom button.t{font-size:10px}}
 /* words view: toggle, timeline, panel */
 .sheet.words .c-feel,.sheet.words .r-ctl,.sheet.words .c-key,.sheet.words .det,.sheet.words #viewseg,.sheet.words .vlab-v{display:none}
-@media(min-width:961px){.sheet.story .c-stage .stage{height:clamp(360px,calc(100vh - 150px),620px)}.sheet.story .c-stage{position:sticky;top:12px;align-self:flex-start}.sheet.story .c-stage .stage{position:relative;top:auto}}
+@media(min-width:961px){.sheet.story .c-stage .stage{height:clamp(300px,calc(100vh - 250px),600px)}.sheet.story .c-stage{position:sticky;top:12px;align-self:flex-start}.sheet.story .c-stage .stage{position:relative;top:auto}}
+.sctl details{margin-top:8px}.sctl summary{cursor:pointer;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--mut)}.sctl details .chips{margin-top:8px;max-height:84px;overflow:auto}
 .sctl{padding:8px 4px 4px}.sctl .lab{margin:0 0 6px}.sctl .chips{gap:6px}.sctl .chip{font-size:12px;padding:3px 9px 3px 7px}
 .sheet.story .c-feel,.sheet.story .r-ctl,.sheet.story .c-key,.sheet.story .det,.sheet.story #viewseg,.sheet.story .c-time{display:none}
 .sstep{min-height:78vh;display:flex;flex-direction:column;justify-content:center;padding:12px 0;opacity:.3;transition:opacity .35s}
@@ -373,7 +374,7 @@ ALL.forEach(a=>{a.ref=Math.max(...a.layers.map(l=>l.v));a.sh=a.shape?SH[a.shape]
 D.events.forEach(e=>{e.v=vec(e.lon,e.lat)});
 D.gaps.forEach(g=>{g.v=SH[g.shape].cv});
 const RMAX=9,reach=v=>Math.max(.9,RMAX*v/100);
-const state={pops:new Set(['youth','adults','students']),feels:new Set(D.feel.map(f=>f.id)),split:'all',events:true,spin:!reduce,sel:null,multi:true,mode:'feel'};
+const state={pops:new Set(['youth','adults','students']),feels:new Set(D.feel.map(f=>f.id)),split:'all',events:true,spin:!reduce,sel:null,multi:true,mode:'feel',named:new Set()};
 const view={lon:20,lat:20,z:1};let target=null;
 function auraOn(a){if(!state.pops.has(a.pop))return false;if(a.splitDim)return a.splitDim===state.split;if(a.id==='US-adults')return state.split==='all';return true}
 /* hesitancy about having children is an attitude, not a feeling, but it has its own square and is drawn on the one-map globe too */
@@ -690,11 +691,12 @@ function draw(){
     ctx.beginPath();ctx.arc(c.ex,c.ey,2.6,0,7);ctx.fillStyle=PAPER;ctx.fill();ctx.lineWidth=1.3;ctx.strokeStyle=INK;ctx.stroke();
   });
   const quiet=pl=>MU&&view.z<1.7&&pl!==selPlace;   // small maps only carry names once zoomed or selected
-  const gl=v=>{if(quiet(v.g.place))return;labShape(v.g.title,v,v.g.place===selPlace)};
+  const showName=pl=>pl===selPlace||state.named.has(pl);   // country names stay off the globe until a place is picked or named
+  const gl=v=>{if(!showName(v.g.place))return;labShape(v.g.title,v,v.g.place===selPlace)};
   gv.filter(v=>v.g.place===selPlace).forEach(gl);
   const ord=vis.slice().sort((p,q)=>(!!q.a.splitDim-!!p.a.splitDim)||(q.a.place===selPlace)-(p.a.place===selPlace)||q.size-p.size);
   const named=new Set();
-  ord.forEach(v=>{if(quiet(v.a.place))return;const t=alab(v.a);if(v.sh){if(named.has(t))return;named.add(t);labShape(t,v,v.a.place===selPlace)}else lab(t,v.o.x,v.o.y,LF,v.size/2)});
+  ord.forEach(v=>{if(!showName(v.a.place))return;const t=alab(v.a);if(v.sh){if(named.has(t))return;named.add(t);labShape(t,v,v.a.place===selPlace)}else lab(t,v.o.x,v.o.y,LF,v.size/2)});
   gv.filter(v=>v.g.place!==selPlace).forEach(gl);
   if(showEv)D.events.forEach(e=>{if(e.kind!=='extreme')return;const o=pr(e.v,1);if(o.z>.05)evs.push({e,o})});
   calls.forEach(c=>{
@@ -1201,26 +1203,27 @@ function applyStory(){
   const c=$('#sctl');if(!c)return;
   c.querySelector('.chips').hidden=hi;c.querySelector('.sgap').hidden=!hi;
   const gb=c.querySelector('#sgapb');gb.setAttribute('aria-pressed',sTog.has('__data')?'true':'false');gb.lastChild.textContent=sTog.has('__data')?'Countries with data: shown':'Countries with data: hidden';
-  c.querySelectorAll('.chips .chip').forEach(b=>b.setAttribute('aria-pressed',want.has(b.dataset.f)?'true':'false'));
+  c.querySelectorAll('.chip[data-f]').forEach(b=>b.setAttribute('aria-pressed',want.has(b.dataset.f)?'true':'false'));
   const lb=c.querySelector('.lab');if(lb)lb.textContent=sStep===STORY.length+1?'Dark dots: countries where nobody has asked.':sStep>STORY.length?'All feelings shown. Tap a colour to hide it.':'Showing one feeling at a time. Tap a colour to add or hide it.';
 }
 function setStoryStep(i){if(i!==sStep){sStep=i;sTog=new Set()}applyStory()}
 function buildSctl(){
   const c=$('#sctl');
-  c.innerHTML='<p class="lab">Showing one feeling at a time. Tap a colour to add or hide it.</p><div class="chips">'+STORY.map(f=>'<button type="button" class="chip" data-f="'+f+'" aria-pressed="false" style="--c:'+F[f].color+'"><i></i>'+esc(F[f].name)+'</button>').join('')+'</div><div class="sgap" hidden><button type="button" class="chip" id="sgapb" aria-pressed="false" style="--c:#2a2da0"><i></i>Countries with data: hidden</button></div>';
+  c.innerHTML='<p class="lab">Showing one feeling at a time. Tap a colour to add or hide it.</p><div class="chips">'+STORY.map(f=>'<button type="button" class="chip" data-f="'+f+'" aria-pressed="false" style="--c:'+F[f].color+'"><i></i>'+esc(F[f].name)+'</button>').join('')+'</div><details class="snames"><summary>Name countries on the globe</summary><div class="chips">'+[...new Set(D.auras.map(x=>x.place))].map(id=>[id,PL[id].name]).sort((x,y)=>x[1].localeCompare(y[1])).map(q=>'<button type="button" class="chip" data-n="'+q[0]+'" aria-pressed="'+(state.named.has(q[0])?'true':'false')+'" style="--c:#2a2da0"><i></i>'+esc(q[1])+'</button>').join('')+'</div></details><div class="sgap" hidden><button type="button" class="chip" id="sgapb" aria-pressed="false" style="--c:#2a2da0"><i></i>Countries with data: hidden</button></div>';
   c.hidden=false;
-  c.onclick=e=>{const b=e.target.closest('.chip');if(!b)return;const f=b.id==='sgapb'?'__data':b.dataset.f;sTog.has(f)?sTog.delete(f):sTog.add(f);applyStory()};
+  c.onclick=e=>{const b=e.target.closest('.chip');if(!b)return;if(b.dataset.n){const id=b.dataset.n;state.named.has(id)?state.named.delete(id):state.named.add(id);b.setAttribute('aria-pressed',state.named.has(id)?'true':'false');dirty=true;return}const f=b.id==='sgapb'?'__data':b.dataset.f;sTog.has(f)?sTog.delete(f):sTog.add(f);applyStory()};
 }
 function startStory(){
   if(state.mode==='wstory'){startWStory();return}
   sSaved={feels:new Set(state.feels),events:state.events};
-  state.feels=new Set();state.events=false;sStep=0;sTog=new Set();state.gapHi=false;
+  state.feels=new Set();state.events=false;sStep=0;sTog=new Set();state.gapHi=false;state.named=new Set();
   detail.innerHTML=storyHTML();buildSctl();
   if(sObs)sObs.disconnect();
   sObs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){const st=e.target.parentElement;detail.querySelectorAll('.sstep').forEach(x=>x.classList.toggle('on',x===st));setStoryStep(+st.dataset.i)}})},{rootMargin:innerWidth<961?'-72% 0px -14% 0px':'-42% 0px -42% 0px',threshold:0});
   detail.querySelectorAll('.sin').forEach(s=>sObs.observe(s));
 }
 function endStory(){
+  state.named=new Set();
   state.gapHi=false;dirty=true;
   const sc=$('#sctl');if(sc){sc.hidden=true;sc.innerHTML=''}
   if(sObs){sObs.disconnect();sObs=null}

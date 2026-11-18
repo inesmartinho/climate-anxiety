@@ -149,6 +149,14 @@ ul.lim2{padding-left:18px;margin:0}ul.lim2 li{margin:0 0 9px;font-size:14.5px}
 @media(max-width:560px){.key{grid-template-columns:minmax(0,1fr)}.zoom button{width:34px;height:34px}.zoom button.t{font-size:10px}}
 /* words view: toggle, timeline, panel */
 .sheet.words .c-feel,.sheet.words .r-ctl,.sheet.words .c-key,.sheet.words .det,.sheet.words #viewseg,.sheet.words .vlab-v{display:none}
+.sheet.story .c-feel,.sheet.story .r-ctl,.sheet.story .c-key,.sheet.story .det,.sheet.story #viewseg,.sheet.story .c-time{display:none}
+.sstep{min-height:78vh;display:flex;flex-direction:column;justify-content:center;padding:12px 0;opacity:.3;transition:opacity .35s}
+.sstep.on{opacity:1}
+.sstep h2{margin:0 0 8px}.sstep p{margin:.5em 0;line-height:1.45}
+.sbig{font-size:clamp(56px,8vw,92px);line-height:1;letter-spacing:-.03em;margin:.1em 0 .05em!important}
+.sbig small{font-size:13px;letter-spacing:.08em;text-transform:uppercase;margin-left:8px;color:var(--mut)}
+.sstep .fd{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:7px;vertical-align:-1px}
+@media(max-width:960px){.sheet.story .r-mid{display:block}.sheet.story .c-stage{position:sticky;top:0;z-index:5;background:var(--bg)}.sheet.story .c-stage .stage{height:42vh;min-height:260px}.sheet.story .sstep{min-height:64vh}}
 .c-time{display:none;padding:clamp(12px,2vw,18px)}
 .sheet.words .c-time{display:block}
 .vbar .seg.mode{margin-right:2px}
@@ -199,7 +207,7 @@ ul.lim2{padding-left:18px;margin:0}ul.lim2 li{margin:0 0 9px;font-size:14.5px}
     <section class="c-stage" aria-label="Globes">
       <div class="vbar">
         <span class="lab">Show</span>
-        <div class="seg mode" id="modeseg" role="group" aria-label="What the globe shows"><button type="button" data-mode="feel" aria-pressed="true">Feelings</button><button type="button" data-mode="words" aria-pressed="false">Words</button></div>
+        <div class="seg mode" id="modeseg" role="group" aria-label="What the globe shows"><button type="button" data-mode="feel" aria-pressed="true">Feelings</button><button type="button" data-mode="words" aria-pressed="false">Words</button><button type="button" data-mode="story" aria-pressed="false">Story</button></div>
         <div class="seg" id="viewseg" role="group" aria-label="View"><button type="button" data-m="multi" aria-pressed="true">Separate maps</button><button type="button" data-m="one" aria-pressed="false">One map</button></div>
         <div class="mz"><button type="button" id="mzin" aria-label="Zoom in">+</button><button type="button" id="mzout" aria-label="Zoom out">−</button><button type="button" id="mrst" class="t" aria-label="Reset view">Reset</button></div>
         <p class="vhint" id="vhint"></p>
@@ -758,6 +766,7 @@ function bind(g){
     useGlobe(g);
     const was=drag;drag=null;
     if(was&&!was.moved){
+      if(state.mode==='story')return;
       stopSpin();const h=hitAt(xy(e));
       if(!h){state.sel=null;renderPanel();syncPlaces();dirty=true;return}
       if(h.kind==='word')selectWordPlace(h.pid);else if(h.kind==='aura')selectPlace(h.a.place,h.a.id);else if(h.kind==='gap')selectPlace(h.g.place);else selectEvent(h.e);
@@ -908,6 +917,7 @@ function eventHTML(e){
 }
 function renderPanel(){
   const s=state.sel;
+  if(state.mode==='story'){if(!detail.querySelector('.sstep'))startStory();updateCaps();return}
   detail.innerHTML=state.mode==='words'?wordsPanel():!s?introHTML():s.type==='event'?eventHTML(s.e):placeHTML(s.place,s.aura);
   updateCaps();tlSync();
 }
@@ -1103,11 +1113,18 @@ $('#tlplay').addEventListener('click',()=>{
 });
 function setMode(m){
   if(m===state.mode)return;
+  const from=state.mode;
+  if(from==='story')endStory();
   state.mode=m;state.sel=null;stopPlay();
-  $('.sheet').classList.toggle('words',m==='words');
+  const sh=$('.sheet');sh.classList.toggle('words',m==='words');sh.classList.toggle('story',m==='story');
   $('#modeseg').querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.mode===m)));
-  if(m==='words'){prevMulti=state.multi;setMulti(false);buildTimeline();$('#hint').textContent='Drag to turn the globe · click a dot';MAIN.cv.setAttribute('aria-label','Dot globe with a dot for each place where a climate word was introduced or first documented. Use the timeline and the list view of the words for the same content as text.')}
-  else{setMulti(prevMulti);$('#hint').textContent='Drag to turn the globe · click a country';MAIN.cv.setAttribute('aria-label',MAIN_ARIA)}
+  if(from==='feel'&&m!=='feel'){prevMulti=state.multi;setMulti(false)}
+  if(m==='feel')setMulti(prevMulti);
+  const ARIA={words:'Dot globe with a dot for each place where a climate word was introduced or first documented. Use the timeline and the list view of the words for the same content as text.',story:'Dot globe that gains one feeling at each step of the story. Read the steps beside it.'};
+  MAIN.cv.setAttribute('aria-label',ARIA[m]||MAIN_ARIA);
+  $('#hint').textContent=m==='words'?'Drag to turn the globe · click a dot':m==='story'?'Scroll to add the next feeling':'Drag to turn the globe · click a country';
+  if(m==='words')buildTimeline();
+  if(m==='story')startStory();
   target={lon:m==='words'?10:view.lon,lat:20,z:1};
   renderPanel();dirty=true;
 }
@@ -1116,6 +1133,44 @@ $('#modeseg').addEventListener('click',e=>{const b=e.target.closest('button[data
 document.addEventListener('click',e=>{const b=e.target.closest('[data-word]');if(b&&state.mode==='words')selectWord(b.dataset.word)});
 let tlRz;window.addEventListener('resize',()=>{if(state.mode!=='words')return;clearTimeout(tlRz);tlRz=setTimeout(buildTimeline,150)});
 buildWordLists();
+/* ---------- story: one feeling is added to the globe at each step of the scroll ---------- */
+const STORY=['worried','afraid','anxious','powerless','distressed','children','screen'];
+let sSaved=null,sObs=null;
+function feelFacts(f){
+  const as=D.auras.filter(a=>!a.splitDim&&a.layers.some(l=>l.f===f));
+  let best=null;as.forEach(a=>a.layers.forEach(l=>{if(l.f===f&&(!best||l.v>best.l.v))best={a,l}}));
+  return {best,places:new Set(as.map(a=>a.place)).size};
+}
+function storyHTML(){
+  let h='<div class="story"><section class="sstep" data-i="0"><p class="lab">Scroll</p><h2>One globe, many feelings</h2><p>Each step adds one feeling to the globe. A country fills with that feeling\'s colour by the share of people who report it, so a fuller country is a bigger share. Most of the world stays grey, because nobody has asked there.</p></section>';
+  STORY.forEach((f,i)=>{
+    const fe=F[f],ft=feelFacts(f),b=ft.best;
+    h+='<section class="sstep" data-i="'+(i+1)+'"><p class="lab"><i class="fd" style="background:'+fe.color+'"></i>'+(i+1)+' of '+STORY.length+'</p><h2>'+esc(fe.name)+'</h2>'
+      +(b?'<p class="sbig" style="color:'+fe.color+'">'+pct(b.l.v)+(b.l.prov?'<small> provisional</small>':'')+'</p><p>'+esc(b.l.ind)+'</p><p class="wm">The largest share in the data: '+esc(b.a.who||POPN[b.a.pop])+(b.a.pooled&&b.a.n?', '+esc(b.a.n):' · '+esc(PL[b.a.place].name))+'.</p>':'')
+      +'<p>'+esc(fe.gloss.charAt(0).toUpperCase()+fe.gloss.slice(1))+'.</p><p class="wm">A figure exists for '+ft.places+(ft.places===1?' place':' places')+'. Compare percentages only within one survey.</p></section>';
+  });
+  h+='<section class="sstep" data-i="'+(STORY.length+1)+'"><p class="lab">All together</p><h2>Every feeling, on one globe</h2><p>Each country now carries the nested colours of the feelings its surveys asked about. The grey dots are the places where nobody has asked yet, and an empty place is not a calm place.</p><p class="wm">Drag the globe and hover a country to read it.</p><p><button type="button" class="tg" data-go="feel">Explore the feelings map</button> <button type="button" class="tg" data-go="words">See where the words come from</button></p></section></div>';
+  return h;
+}
+function setStoryStep(i){
+  const n=Math.min(i,STORY.length);
+  const want=new Set(STORY.slice(0,n));
+  if(want.size===state.feels.size&&[...want].every(x=>state.feels.has(x)))return;
+  state.feels=want;dirty=true;
+}
+function startStory(){
+  sSaved={feels:new Set(state.feels),events:state.events};
+  state.feels=new Set();state.events=false;
+  detail.innerHTML=storyHTML();
+  if(sObs)sObs.disconnect();
+  sObs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){detail.querySelectorAll('.sstep').forEach(s=>s.classList.toggle('on',s===e.target));setStoryStep(+e.target.dataset.i)}})},{rootMargin:innerWidth<961?'-66% 0px -22% 0px':'-42% 0px -42% 0px',threshold:0});
+  detail.querySelectorAll('.sstep').forEach(s=>sObs.observe(s));
+}
+function endStory(){
+  if(sObs){sObs.disconnect();sObs=null}
+  if(sSaved){state.feels=sSaved.feels;state.events=sSaved.events;sSaved=null}
+}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-go]');if(b&&state.mode==='story'){setMode(b.dataset.go);$('.c-stage').scrollIntoView({behavior:reduce?'auto':'smooth',block:'start'})}});
 function setMulti(on){
   state.multi=on;hov=null;
   $('.sheet').classList.toggle('multi',on);

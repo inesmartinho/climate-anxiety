@@ -158,6 +158,14 @@ ul.lim2{padding-left:18px;margin:0}ul.lim2 li{margin:0 0 9px;font-size:14.5px}
 .sstep{min-height:78vh;display:flex;flex-direction:column;justify-content:center;padding:12px 0;opacity:.3;transition:opacity .35s}
 .sstep.on{opacity:1}
 .sstep h2{margin:0 0 8px}.sstep p{margin:.5em 0;line-height:1.45}
+/* words story drawn as a timeline: a line down the left with a node at each step */
+.sheet.wstory .story{position:relative;padding-left:34px}
+.sheet.wstory .story::before{content:"";position:absolute;left:8px;top:0;bottom:0;width:2px;background:var(--line)}
+.sheet.wstory .sin{position:relative}
+.sheet.wstory .sin::before{content:"";position:absolute;left:-34px;top:2px;width:12px;height:12px;border-radius:50%;background:var(--bg);border:2px solid var(--ink);transition:background .3s,transform .3s}
+.sheet.wstory .sstep.on .sin::before{background:var(--ink);transform:scale(1.25)}
+.sheet.wstory .sin>.lab{font-size:13px;font-weight:600;letter-spacing:.1em;color:var(--ink);margin-bottom:10px}
+.sheet.wstory .sstep:not(.on) .sin>.lab{color:var(--mut)}
 .sbig{font-size:clamp(56px,8vw,92px);line-height:1;letter-spacing:-.03em;margin:.1em 0 .05em!important}
 .sbig small{font-size:13px;letter-spacing:.08em;text-transform:uppercase;margin-left:8px;color:var(--mut)}
 .sstep .fd{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:7px;vertical-align:-1px}

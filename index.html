@@ -733,6 +733,10 @@ function showPick(h){
   else if(h.kind==='gap')html=placeHTML(h.g.place);
   else if(h.kind==='event')html=eventHTML(h.e);
   else if(h.e)html=eventHTML(h.e);
+  if(h.kind==='word')fly(h.place.lat,h.place.lon,2);
+  else if(h.kind==='aura'||h.kind==='gap'){const id=h.kind==='aura'?h.a.place:h.g.place,c=centre(id);fly(c[0],c[1],zoomFor(pshape(id)?SH[pshape(id)].ext:3))}
+  else if(h.e){const ext=Math.max(...h.e.shapes.map(k=>SH[k].ext+angDeg(h.e.v,SH[k].cv)));fly(h.e.lat,h.e.lon,zoomFor(ext))}
+  if(target&&W>=620){const sh=Math.min(320,W*.4)/2;target.lon+=sh/(R*target.z)/rad}   // keep the country clear of the card
   html=html.replace(/<button type="button" class="x" data-act="clear">Close<\/button>/g,'').replace(/<button type="button" data-act="clear">[^<]*<\/button>/g,'').replace(/ · tap one to read it/,'').replace(/<p class="lab" style="margin:4px 0 6px">Split US adults by<\/p><div class="seg" data-seg[^>]*>.*?<\/div>/,'');
   const q=$('#pick');q.innerHTML='<button type="button" class="x pk" aria-label="Close">Close</button>'+html;q.hidden=false;q.scrollTop=0;
 }

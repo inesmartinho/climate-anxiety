@@ -839,16 +839,11 @@ function shapePath(key,box,s){
 /* colour field of one group: a gradient from left to right. One feeling covers as much of the width as its share, then fades into the pale country. Several feelings share the width in proportion to their percentages. */
 function gradStops(fs,bg){
   const tot=fs.reduce((t,q)=>t+q.w,0);if(!(tot>0))return [];
-  let raw;
-  if(bg){const cover=clamp(tot/100,0,1),a=Math.max(0,cover-.1),b=Math.min(1,cover+.1);raw=[[0,fs[0].c],[a,fs[0].c],[b,bg],[1,bg]]}
-  else if(fs.length===1)raw=[[0,fs[0].c],[1,fs[0].c]];
-  else{raw=[];let pos=0;fs.forEach((q,i)=>{const st=pos/tot,en=(pos+q.w)/tot;raw.push([i===0?0:(st+en)/2,q.c]);pos+=q.w});raw.push([1,fs[fs.length-1].c])}
-  const out=[raw[0]];
-  for(let i=1;i<raw.length;i++){
-    const p0=raw[i-1],p1=raw[i];
-    if(p0[1]!==p1[1]&&p1[0]>p0[0])for(let k=1;k<4;k++)out.push([p0[0]+(p1[0]-p0[0])*k/4,mixHex(p0[1],p1[1],k/4)]);   // in-between stops, so the colours blend evenly
-    out.push(p1);
-  }
+  const E=.015;   // width of each colour change: small, so the edges are easy to see
+  if(bg){const cover=clamp(tot/100,0,1);return [[0,fs[0].c],[Math.max(0,cover-E),fs[0].c],[Math.min(1,cover+E),bg],[1,bg]]}
+  if(fs.length===1)return [[0,fs[0].c],[1,fs[0].c]];
+  const out=[];let pos=0;
+  fs.forEach((q,i)=>{const st=pos/tot,en=(pos+q.w)/tot;out.push([i===0?0:st+E,q.c]);out.push([i===fs.length-1?1:en-E,q.c]);pos+=q.w});
   return out;
 }
 let _nid=0;

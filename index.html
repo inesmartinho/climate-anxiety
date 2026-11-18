@@ -1147,7 +1147,7 @@ function feelFacts(f){
   return {best,places:new Set(as.map(a=>a.place)).size};
 }
 function storyHTML(){
-  let h='<div class="story"><section class="sstep" data-i="0"><div class="sin"><p class="lab">Scroll</p><h2>One globe, many feelings</h2><p>Each step adds one feeling to the globe. A country fills with that feeling\'s colour by the share of people who report it, so a fuller country is a bigger share. Most of the world stays grey, because nobody has asked there.</p></div></section>';
+  let h='<div class="story"><section class="sstep" data-i="0"><div class="sin"><p class="lab">Scroll</p><h2>How does it feel, place by place?</h2><p>Each step adds one feeling to the globe. A country fills with that feeling\'s colour by the share of people who report it, so a fuller country is a bigger share. Most of the world stays grey, because nobody has asked there.</p></div></section>';
   STORY.forEach((f,i)=>{
     const fe=F[f],ft=feelFacts(f),b=ft.best;
     h+='<section class="sstep" data-i="'+(i+1)+'"><div class="sin"><p class="lab"><i class="fd" style="background:'+fe.color+'"></i>'+(i+1)+' of '+STORY.length+'</p><h2>'+esc(fe.name)+'</h2>'

@@ -50,7 +50,7 @@ h1{font-size:clamp(30px,4.6vw,44px);line-height:1.05;letter-spacing:-.03em}
 .mini .ms{position:relative;width:100%;aspect-ratio:1/1;touch-action:pan-y;user-select:none;-webkit-user-select:none}
 .mini .offmsg{position:absolute;inset:0;display:none;place-items:center;text-align:center;padding:20px;font-size:13px;color:var(--mut)}
 .mini.off .offmsg{display:grid}.mini.off canvas{visibility:hidden}
-.mini .wl{margin:0;padding:0 11px 12px;display:flex;flex-wrap:wrap;gap:6px}.sheet.wg .tl-head{display:none}.mini .gl2{margin:0;padding:0 11px 11px;font-size:12px;color:var(--mut);line-height:1.35}
+.vcol{display:flex;flex-direction:column;align-items:flex-start;gap:6px}.mini .wl{margin:0;padding:0 11px 12px;display:flex;flex-wrap:wrap;gap:6px}.sheet.wg .tl-head{display:none}.mini .gl2{margin:0;padding:0 11px 11px;font-size:12px;color:var(--mut);line-height:1.35}
 .mini.lg{padding:14px;gap:10px;justify-content:flex-start;grid-column:1/-1}
 .mini.lg .lab{margin:0}
 .mini.lg .note{margin:0;font-size:12.5px;line-height:1.4}
@@ -229,9 +229,9 @@ ul.lim2{padding-left:18px;margin:0}ul.lim2 li{margin:0 0 9px;font-size:14.5px}
     <section class="c-stage" aria-label="Globes">
       <div class="vbar">
         <span class="lab">Stories</span>
-        <div class="seg mode" id="modeseg" role="group" aria-label="Stories"><button type="button" data-mode="story" aria-pressed="false">Feelings story</button><button type="button" data-mode="wstory" aria-pressed="false">Words story</button></div>
+        <div class="vcol"><div class="seg mode" id="modeseg" role="group" aria-label="Stories"><button type="button" data-mode="story" aria-pressed="false">Feelings story</button><button type="button" data-mode="wstory" aria-pressed="false">Words story</button></div><div class="seg" id="fview" role="group" aria-label="How to read the feelings"><button type="button" data-fv="story" aria-pressed="true">Scrolling</button><button type="button" data-fv="feel" aria-pressed="false">Grid</button></div></div>
         <span class="lab">Or explore</span>
-        <div class="seg mode" id="modeseg2" role="group" aria-label="Explore on your own"><button type="button" data-mode="feel" aria-pressed="true" title="All the feelings from the story, side by side">Feelings grid</button><button type="button" data-mode="words" aria-pressed="false" title="The words, one map for each period, with their years">Words grid</button></div>
+        <div class="seg mode" id="modeseg2" role="group" aria-label="Explore on your own"><button type="button" data-mode="words" aria-pressed="false" title="The words, one map for each period, with their years">Words grid</button></div>
         <div class="mz"><button type="button" id="mzin" aria-label="Zoom in">+</button><button type="button" id="mzout" aria-label="Zoom out">−</button><button type="button" id="mrst" class="t" aria-label="Reset view">Reset</button></div>
         <p class="vhint" id="vhint"></p>
       </div>
@@ -1159,6 +1159,8 @@ function setMode(m){
   if(m==='feel')setMulti(prevMulti);
   const ARIA={words:'Dot globe with a dot for each place where a climate word was introduced or first documented. Use the timeline and the list view of the words for the same content as text.',story:'Dot globe that gains one feeling at each step of the story. Read the steps beside it.',wstory:'Dot globe that gains a group of words at each step of the story. Read the steps beside it.'};
   MAIN.cv.setAttribute('aria-label',ARIA[m]||MAIN_ARIA);
+  $('#fview').hidden=!(m==='story'||m==='feel');$('#fview').querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.fv===m)));
+  if(m==='feel')$('#modeseg button[data-mode=story]').setAttribute('aria-pressed','true');
   $('#hint').textContent=m==='words'?'Drag to turn the globe · click a dot':m==='story'?'Scroll to see the next feeling':m==='wstory'?'Scroll to add the next words':'Drag to turn the globe · click a country';
   if(m==='words')buildTimeline();
   if(m==='story'||m==='wstory')startStory();
@@ -1166,6 +1168,7 @@ function setMode(m){
   renderPanel();syncWG();dirty=true;
 }
 const MAIN_ARIA=MAIN.cv.getAttribute('aria-label');
+$('#fview').addEventListener('click',e=>{const b=e.target.closest('button[data-fv]');if(b)setMode(b.dataset.fv)});
 document.querySelectorAll('.seg.mode').forEach(g=>g.addEventListener('click',e=>{const b=e.target.closest('button[data-mode]');if(b)setMode(b.dataset.mode)}));
 document.addEventListener('click',e=>{const b=e.target.closest('[data-word]');if(b&&state.mode==='words')selectWord(b.dataset.word)});
 let tlRz;window.addEventListener('resize',()=>{if(state.mode!=='words')return;clearTimeout(tlRz);tlRz=setTimeout(buildTimeline,150)});
@@ -1217,7 +1220,7 @@ function buildSctl(){
 }
 function startStory(){
   if(state.mode==='wstory'){startWStory();return}
-  sSaved={feels:new Set(state.feels),events:state.events};
+  if(!sSaved)sSaved={feels:new Set(state.feels.size?state.feels:D.feel.map(f=>f.id)),events:state.events||!state.feels.size};
   state.feels=new Set();state.events=false;sStep=0;sTog=new Set();state.gapHi=false;state.named=new Set();
   detail.innerHTML=storyHTML();buildSctl();
   if(sObs)sObs.disconnect();

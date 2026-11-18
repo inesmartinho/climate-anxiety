@@ -376,7 +376,7 @@ let cv=null,stage=null,tip=null,ctx=null,hits=[],G=null,curFeel=null,curWs=null;
 let W=0,H=0,dpr=1,R=0,cx=0,cy=0,Rz=0,cL=1,sL=0,cA=1,sA=0,dirty=true,hov=null,drag=null;
 const MAIN={cv:$('#g'),stage:$('#stage'),tip:$('#tip'),hits:[],feel:null,visible:true,off:false,W:0,H:0,dpr:1,R:0,cx:0,cy:0};
 MAIN.ctx=MAIN.cv.getContext('2d');
-const MINIS=[],WMINIS=[];
+const MINIS=[],WMINIS=[],GAX={};
 function useGlobe(g){G=g;cv=g.cv;ctx=g.ctx;stage=g.stage;tip=g.tip;hits=g.hits;W=g.W;H=g.H;dpr=g.dpr;R=g.R;cx=g.cx;cy=g.cy;curFeel=g.feel;curWs=g.ws||null;setCam()}
 function resizeG(g){const s=g.stage;g.dpr=Math.min(2,window.devicePixelRatio||1);g.W=s.clientWidth;g.H=s.clientHeight;g.cv.width=Math.round(g.W*g.dpr);g.cv.height=Math.round(g.H*g.dpr);g.cx=g.W/2;g.cy=(g.feel||g.ws)?g.H*.5:g.H*.52;g.R=Math.min(g.W,g.H)*((g.feel||g.ws)?.45:.42);dirty=true}
 function watch(g){new IntersectionObserver(es=>{g.visible=es[0].isIntersecting;if(g.visible)dirty=true},{threshold:0}).observe(g.stage);new ResizeObserver(()=>resizeG(g)).observe(g.stage)}
@@ -510,11 +510,25 @@ function draw(){
   const MIXC={};
   const mixC=(a,b,k,K)=>{const key=a+b+k+'/'+K;return MIXC[key]||(MIXC[key]=mixHex(a,b,(x=>x*x*(3-2*x))(k/K)))};
   /* the blended colour field of one group: short gradients of in-between shapes at each boundary between two feelings, clipped to the country */
+  /* the colour runs west to east across the country itself, so it stays attached to the land when the globe turns */
+  const gAxis=v=>{
+    const key=v.a&&v.a.shape,sh=key&&SH[key];if(!sh)return null;
+    let e=GAX[key];
+    if(!e){
+      const lo=[],la=[];sh.parts.forEach(pt=>{const q=pt.p;for(let i=0;i<q.length;i+=2){lo.push(q[i]);la.push(q[i+1])}});
+      let mn=Math.min(...lo),mx=Math.max(...lo);
+      if(mx-mn>180){for(let i=0;i<lo.length;i++)if(lo[i]<0)lo[i]+=360;mn=Math.min(...lo);mx=Math.max(...lo)}
+      const lat=(Math.min(...la)+Math.max(...la))/2,cl=(mn+mx)/2,A=vec(cl-.5,lat),B=vec(cl+.5,lat),E=[B[0]-A[0],B[1]-A[1],B[2]-A[2]],n=Math.hypot(E[0],E[1],E[2])||1;
+      e=GAX[key]={c:vec(cl,lat),E:[E[0]/n,E[1]/n,E[2]/n],h:Math.max(.02,(mx-mn)*rad*Math.cos(lat*rad)/2)};
+    }
+    const p0=pr([e.c[0]-e.E[0]*e.h,e.c[1]-e.E[1]*e.h,e.c[2]-e.E[2]*e.h],1),p1=pr([e.c[0]+e.E[0]*e.h,e.c[1]+e.E[1]*e.h,e.c[2]+e.E[2]*e.h],1);
+    return [p0.x,p0.y,p1.x+.01,p1.y];
+  };
   const paintBlend=(v,it)=>{
     ctx.save();pathParts(v.base.parts);ctx.clip();
     if(it.length){
       const bg=it[0].l.f.indexOf('bg_')===0&&it[1]?bgFor(it[1].l.f,it[1].l.v):it[0].l.f.indexOf('bg_')===0?F[it[0].l.f].color:null,fs=(bg?it.slice(1):it).map(q=>({c:strong(F[q.l.f].color,q.l.v,q.l.f),w:Math.max(0,q.l.v*easeOut(q.l.p))})),st=gradStops(fs,bg);
-      if(st.length){const bb=v.bb,g=ctx.createLinearGradient(bb[0],0,bb[2]+.01,0);st.forEach(([o,c])=>g.addColorStop(clamp(o,0,1),c));ctx.fillStyle=g;ctx.fillRect(bb[0]-2,bb[1]-2,bb[2]-bb[0]+4,bb[3]-bb[1]+4)}
+      if(st.length){const bb=v.bb,ax=gAxis(v),g=ax?ctx.createLinearGradient(ax[0],ax[1],ax[2],ax[3]):ctx.createLinearGradient(bb[0],0,bb[2]+.01,0);st.forEach(([o,c])=>g.addColorStop(clamp(o,0,1),c));ctx.fillStyle=g;ctx.fillRect(bb[0]-2,bb[1]-2,bb[2]-bb[0]+4,bb[3]-bb[1]+4)}
     }
     ctx.restore();
   };

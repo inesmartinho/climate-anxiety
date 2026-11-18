@@ -3,7 +3,6 @@
 Interactive web experience for the "Make sense" workshop (Master Digital Experience Design, ECAL).
 
 - `index.html`: the 3D globe "map of emotions" (single self-contained file, data embedded), the main page
-- `scroll.html`: the scrolling data experience (single self-contained file, data embedded)
 - `data/`: the source CSVs
 
 ## Data sources

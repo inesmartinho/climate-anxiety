@@ -228,8 +228,10 @@ ul.lim2{padding-left:18px;margin:0}ul.lim2 li{margin:0 0 9px;font-size:14.5px}
   <div class="rw r-mid">
     <section class="c-stage" aria-label="Globes">
       <div class="vbar">
-        <span class="lab">Show</span>
-        <div class="seg mode" id="modeseg" role="group" aria-label="What the globe shows"><button type="button" data-mode="story" aria-pressed="false">Feelings story</button><button type="button" data-mode="feel" aria-pressed="true" title="All the feelings from the story, side by side">Grid view</button><button type="button" data-mode="words" aria-pressed="false">Words</button><button type="button" data-mode="wstory" aria-pressed="false">Words story</button></div>
+        <span class="lab">Stories</span>
+        <div class="seg mode" id="modeseg" role="group" aria-label="Stories"><button type="button" data-mode="story" aria-pressed="false">Feelings story</button><button type="button" data-mode="wstory" aria-pressed="false">Words story</button></div>
+        <span class="lab">Or explore</span>
+        <div class="seg mode" id="modeseg2" role="group" aria-label="Explore on your own"><button type="button" data-mode="feel" aria-pressed="true" title="All the feelings from the story, side by side">Grid view</button><button type="button" data-mode="words" aria-pressed="false">Words</button></div>
         <div class="seg" id="viewseg" role="group" aria-label="View"><button type="button" data-m="multi" aria-pressed="true">Separate maps</button><button type="button" data-m="one" aria-pressed="false">One map</button></div>
         <div class="mz"><button type="button" id="mzin" aria-label="Zoom in">+</button><button type="button" id="mzout" aria-label="Zoom out">−</button><button type="button" id="mrst" class="t" aria-label="Reset view">Reset</button></div>
         <p class="vhint" id="vhint"></p>
@@ -1133,7 +1135,7 @@ function setMode(m){
   if(!reduce&&!spinOff){state.spin=true;$('#spin').setAttribute('aria-pressed','true')}
   state.mode=m;state.sel=null;stopPlay();
   const sh=$('.sheet');sh.classList.toggle('words',m==='words'||m==='wstory');sh.classList.toggle('story',m==='story');sh.classList.toggle('wstory',m==='wstory');
-  $('#modeseg').querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.mode===m)));
+  document.querySelectorAll('.seg.mode button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.mode===m)));
   if(from==='feel'&&m!=='feel'){prevMulti=state.multi;setMulti(false)}
   if(m==='feel')setMulti(prevMulti);
   const ARIA={words:'Dot globe with a dot for each place where a climate word was introduced or first documented. Use the timeline and the list view of the words for the same content as text.',story:'Dot globe that gains one feeling at each step of the story. Read the steps beside it.',wstory:'Dot globe that gains a group of words at each step of the story. Read the steps beside it.'};
@@ -1145,7 +1147,7 @@ function setMode(m){
   renderPanel();dirty=true;
 }
 const MAIN_ARIA=MAIN.cv.getAttribute('aria-label');
-$('#modeseg').addEventListener('click',e=>{const b=e.target.closest('button[data-mode]');if(b)setMode(b.dataset.mode)});
+document.querySelectorAll('.seg.mode').forEach(g=>g.addEventListener('click',e=>{const b=e.target.closest('button[data-mode]');if(b)setMode(b.dataset.mode)}));
 document.addEventListener('click',e=>{const b=e.target.closest('[data-word]');if(b&&state.mode==='words')selectWord(b.dataset.word)});
 let tlRz;window.addEventListener('resize',()=>{if(state.mode!=='words')return;clearTimeout(tlRz);tlRz=setTimeout(buildTimeline,150)});
 buildWordLists();

@@ -50,7 +50,7 @@ h1{font-size:clamp(30px,4.6vw,44px);line-height:1.05;letter-spacing:-.03em}
 .mini .ms{position:relative;width:100%;aspect-ratio:1/1;touch-action:pan-y;user-select:none;-webkit-user-select:none}
 .mini .offmsg{position:absolute;inset:0;display:none;place-items:center;text-align:center;padding:20px;font-size:13px;color:var(--mut)}
 .mini.off .offmsg{display:grid}.mini.off canvas{visibility:hidden}
-.vcol{display:flex;flex-direction:column;align-items:flex-start;gap:6px}.mini .wl{margin:0;padding:0 11px 12px;display:flex;flex-wrap:wrap;gap:6px}.sheet.wg .tl-head{display:none}.mini .gl2{margin:0;padding:0 11px 11px;font-size:12px;color:var(--mut);line-height:1.35}
+.pick{position:absolute;top:10px;right:10px;width:min(300px,calc(100% - 20px));max-height:calc(100% - 20px);overflow:auto;background:var(--bg);border:1px solid var(--ink);padding:12px 14px;z-index:6;font-size:13px;line-height:1.4;-webkit-mask-image:none}.pick .pk{float:right;margin:0 0 6px 8px}.pick h2,.pick h3{font-size:14px!important;line-height:1.3;margin:0 0 4px}.vcol{display:flex;flex-direction:column;align-items:flex-start;gap:6px}.mini .wl{margin:0;padding:0 11px 12px;display:flex;flex-wrap:wrap;gap:6px}.sheet.wg .tl-head{display:none}.mini .gl2{margin:0;padding:0 11px 11px;font-size:12px;color:var(--mut);line-height:1.35}
 .mini.lg{padding:14px;gap:10px;justify-content:flex-start;grid-column:1/-1}
 .mini.lg .lab{margin:0}
 .mini.lg .note{margin:0;font-size:12.5px;line-height:1.4}
@@ -240,6 +240,7 @@ ul.lim2{padding-left:18px;margin:0}ul.lim2 li{margin:0 0 9px;font-size:14.5px}
           <div class="zoom"><button type="button" id="zin" aria-label="Zoom in">+</button><button type="button" id="zout" aria-label="Zoom out">−</button><button type="button" id="rst" class="t" aria-label="Reset view">Reset</button></div>
           <div class="hint" id="hint">Drag to turn the globe · click a country</div>
           <div class="tip" id="tip" hidden></div>
+          <div class="pick" id="pick" hidden></div>
         </div>
         <div class="sctl" id="sctl" hidden></div>
       </div>
@@ -724,6 +725,18 @@ function frame(now){
 
 /* ---------- interaction ---------- */
 let spinOff=false;   // the globe keeps turning unless someone presses the spin button to stop it
+function hidePick(){const q=$('#pick');q.hidden=true;q.innerHTML=''}
+function showPick(h){
+  let html='';
+  if(h.kind==='word'){const ws=h.ws;html=ws.length===1?wordCard(ws[0]):wplaceCard(h.pid)}
+  else if(h.kind==='aura')html=placeHTML(h.a.place,h.a.id);
+  else if(h.kind==='gap')html=placeHTML(h.g.place);
+  else if(h.kind==='event')html=eventHTML(h.e);
+  else if(h.e)html=eventHTML(h.e);
+  html=html.replace(/<button type="button" class="x" data-act="clear">Close<\/button>/g,'').replace(/<button type="button" data-act="clear">[^<]*<\/button>/g,'').replace(/ · tap one to read it/,'').replace(/<p class="lab" style="margin:4px 0 6px">Split US adults by<\/p><div class="seg" data-seg[^>]*>.*?<\/div>/,'');
+  const q=$('#pick');q.innerHTML='<button type="button" class="x pk" aria-label="Close">Close</button>'+html;q.hidden=false;q.scrollTop=0;
+}
+$('#pick').addEventListener('click',e=>{if(e.target.closest('.pk'))hidePick()});
 function haltSpin(){state.spin=false;$('#spin').setAttribute('aria-pressed','false');$('#hint').style.opacity=0;dirty=true}
 function stopSpin(){$('#hint').style.opacity=0}
 function xy(e){const r=cv.getBoundingClientRect();return {x:e.clientX-r.left,y:e.clientY-r.top}}
@@ -776,7 +789,7 @@ function bind(g){
     useGlobe(g);
     const was=drag;drag=null;
     if(was&&!was.moved){
-      if(state.mode==='story'||state.mode==='wstory')return;
+      if(state.mode==='story'||state.mode==='wstory'){const h=hitAt(xy(e));if(!h){hidePick();return}haltSpin();showPick(h);return}
       stopSpin();const h=hitAt(xy(e));if(h)haltSpin();
       if(!h){state.sel=null;renderPanel();syncPlaces();dirty=true;return}
       if(h.kind==='word')selectWordPlace(h.pid);else if(h.kind==='aura')selectPlace(h.a.place,h.a.id);else if(h.kind==='gap')selectPlace(h.g.place);else selectEvent(h.e);
@@ -1151,7 +1164,7 @@ function setMode(m){
   const from=state.mode;
   if(from==='story'||from==='wstory')endStory();
   if(!reduce&&!spinOff){state.spin=true;$('#spin').setAttribute('aria-pressed','true')}
-  state.mode=m;state.sel=null;stopPlay();
+  state.mode=m;state.sel=null;stopPlay();hidePick();
   const sh=$('.sheet');sh.classList.toggle('words',m==='words'||m==='wstory');sh.classList.toggle('story',m==='story');sh.classList.toggle('wstory',m==='wstory');
   document.querySelectorAll('.seg.mode button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.mode===m)));
   if(from==='feel'&&m!=='feel'){prevMulti=state.multi;setMulti(false)}

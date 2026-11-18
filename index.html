@@ -103,7 +103,7 @@ button[aria-pressed=true].tg,.seg button[aria-pressed=true]{background:var(--ink
 /* the key: one numbered panel per symbol, like the stages on the reference */
 .key{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:var(--ink);font-size:13px;color:var(--mut);margin:0;counter-reset:k}
 .key span{display:flex;flex-direction:column;gap:12px;background:var(--bg);padding:16px 14px 34px;position:relative;counter-increment:k;line-height:1.4}
-.key span:after{content:"KEY 0" counter(k);position:absolute;right:14px;bottom:10px;font-size:11px;letter-spacing:.12em;color:var(--ink)}
+.ctl-col .key{grid-template-columns:minmax(0,1fr)}.key span:after{content:"KEY 0" counter(k);position:absolute;right:14px;bottom:10px;font-size:11px;letter-spacing:.12em;color:var(--ink)}
 .key svg{flex:none;width:76px;height:auto;max-width:100%}
 @media(min-width:700px){.key span:last-child:nth-child(3n+1){grid-column:span 3}.key span:last-child:nth-child(3n+2){grid-column:span 2}}
 #detail{min-height:220px}
@@ -272,10 +272,10 @@ ul.lim2{padding-left:18px;margin:0}ul.lim2 li{margin:0 0 9px;font-size:14.5px}
         <button type="button" class="tg" id="spin" aria-pressed="true">Spin</button>
         <button type="button" class="tg" id="evt" aria-pressed="true">Climate disruption data</button>
       </div>
+      <div class="key c-key" id="key"></div>
     </div>
   </div>
 
-  <div class="key c-key" id="key"></div>
 
   <div class="cell det">
 <details><summary>List view of all the numbers on the map</summary>

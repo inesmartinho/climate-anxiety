@@ -1,13 +1,13 @@
 <title>Map of emotions</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{--warm:#c2410c;--bg:#ebebeb;--paper:#f7f7f7;--ink:#2a2da0;--mut:#4a4db0;--soft:rgba(42,45,160,.12);--line:rgba(42,45,160,.24);--focus:#2a2da0;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 *,*:before,*:after{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.5 "Inter Tight","Helvetica Neue",Helvetica,Arial,system-ui,sans-serif;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.5 "JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0}
 .wrap{max-width:1260px;margin:0 auto;padding:clamp(14px,3vw,34px) 0 64px}
-h1,h2,h3{font-family:"Inter Tight","Helvetica Neue",Helvetica,Arial,sans-serif;font-weight:400;letter-spacing:-.02em;margin:0}
+h1,h2,h3{font-family:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;font-weight:400;letter-spacing:-.02em;margin:0}
 h1{font-size:clamp(30px,4.6vw,44px);line-height:1.05;letter-spacing:-.03em}
 .sub.lead{font-size:19px;color:var(--ink);max-width:46ch;line-height:1.3;margin-top:.6em;letter-spacing:-.01em}
 .hdg{width:100%;display:grid;grid-template-columns:minmax(0,1fr);gap:16px;align-items:end}@media(min-width:961px){.hdg{grid-template-columns:minmax(0,1fr) 375px;gap:0}}.hdg>div{min-width:0}
@@ -20,7 +20,7 @@ h1{font-size:clamp(30px,4.6vw,44px);line-height:1.05;letter-spacing:-.03em}
 .rw>*{background:var(--bg);min-width:0}
 .cell{padding:clamp(12px,2vw,18px);min-width:0}
 .hd{display:flex;justify-content:space-between;align-items:flex-end;gap:12px 24px;flex-wrap:wrap}
-.no{font-family:"Inter Tight","Helvetica Neue",Helvetica,Arial,sans-serif;font-size:clamp(18px,2.6vw,28px);letter-spacing:.05em;text-transform:uppercase;white-space:nowrap}
+.no{font-family:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;font-size:clamp(18px,2.6vw,28px);letter-spacing:.05em;text-transform:uppercase;white-space:nowrap}
 .r-mid{grid-template-columns:minmax(0,1fr) minmax(330px,410px)}
 .r-ctl{grid-template-columns:minmax(0,1.5fr) minmax(0,1fr)}
 .r-two{grid-template-columns:minmax(0,1.6fr) minmax(0,1fr)}
@@ -41,7 +41,7 @@ h1{font-size:clamp(30px,4.6vw,44px);line-height:1.05;letter-spacing:-.03em}
 .mini .cap{display:flex;align-items:flex-start;gap:8px;padding:10px 11px 0;min-height:calc(14px + max(32px,var(--ln,1)*17px))}
 .mini .sw{flex:none;width:15px;height:12px;margin-top:2px;background:radial-gradient(circle at 50% 50%,var(--c) 0,var(--c) 28%,var(--t) 100%)}
 .mini.ev .sw{background:repeating-linear-gradient(45deg,var(--c) 0 1.3px,transparent 1.3px 4px)}
-.mini .no2{flex:none;font-family:"Inter Tight","Helvetica Neue",Helvetica,Arial,sans-serif;font-size:12px;letter-spacing:.08em;color:var(--mut);margin-top:1px}
+.mini .no2{flex:none;font-family:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;font-size:12px;letter-spacing:.08em;color:var(--mut);margin-top:1px}
 .mini .nm{font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;font-weight:500;line-height:1.3;min-width:0}
 .mini .nm{flex:1 1 0}
 .mini .mv{flex:none;margin-left:auto;font-size:12.5px;color:var(--mut);text-align:right;line-height:1.3;font-variant-numeric:tabular-nums;min-width:0}
@@ -648,7 +648,7 @@ function draw(){
     if(!pick){if(!force)return;pick={tx:xr,ty:y,rc:{x:xr-2,y:y-7,w:w+4,h:14}}}
     ctx.textBaseline='middle';ctx.textAlign='left';ctx.lineJoin='round';ctx.lineWidth=4;ctx.strokeStyle=PAPER;ctx.strokeText(text,pick.tx,pick.ty);ctx.fillStyle=INK;ctx.fillText(text,pick.tx,pick.ty);rects.push(pick.rc);
   }
-  const LF='500 12.5px "Inter Tight","Helvetica Neue",Arial,sans-serif';
+  const LF='500 12.5px "JetBrains Mono",ui-monospace,Menlo,Consolas,monospace';
   const labShape=(text,v,force)=>{if(v.o.z<.12||v.al<.5)return;const rx=v.size<40?{l:v.bb[0],r:v.bb[2]}:(rowX(v.base.parts,v.o.y)||{l:v.o.x-4,r:v.o.x+4});lab(text,v.o.x,v.o.y,LF,0,false,rx,true,force,v.sh&&v.size>150&&D.auras.filter(b=>b.place===v.a.place).length<2)};
   const alab=a=>a.title;
   const SHORT={children:'hesitant',worried:'worried',afraid:'afraid',anxious:'anxious',powerless:'powerless',distressed:'distressed',screen:'screen'};
@@ -699,7 +699,7 @@ function draw(){
   if(showEv)D.events.forEach(e=>{if(e.kind!=='extreme')return;const o=pr(e.v,1);if(o.z>.05)evs.push({e,o})});
   calls.forEach(c=>{
     const col=F[c.it.l.f].color;
-    if(c.head){ctx.font='600 10.5px "Inter Tight","Helvetica Neue",Arial,sans-serif';ctx.textBaseline='middle';ctx.textAlign=c.dir>0?'left':'right';ctx.lineJoin='round';ctx.lineWidth=4;ctx.strokeStyle=PAPER;const hx=c.dir>0?c.xe:c.xe,hy=c.y-19,ht=c.head.toUpperCase();ctx.strokeText(ht,hx,hy);ctx.fillStyle='rgba(42,45,160,.62)';ctx.fillText(ht,hx,hy);ctx.textAlign='left'}
+    if(c.head){ctx.font='600 10.5px "JetBrains Mono",ui-monospace,Menlo,Consolas,monospace';ctx.textBaseline='middle';ctx.textAlign=c.dir>0?'left':'right';ctx.lineJoin='round';ctx.lineWidth=4;ctx.strokeStyle=PAPER;const hx=c.dir>0?c.xe:c.xe,hy=c.y-19,ht=c.head.toUpperCase();ctx.strokeText(ht,hx,hy);ctx.fillStyle='rgba(42,45,160,.62)';ctx.fillText(ht,hx,hy);ctx.textAlign='left'}
     ctx.beginPath();ctx.arc(c.tx+4,c.y,4.5,0,7);ctx.fillStyle=col;ctx.fill();ctx.lineWidth=1.2;ctx.strokeStyle=PAPER;ctx.stroke();
     ctx.font=LF;ctx.textBaseline='middle';ctx.textAlign='left';ctx.lineJoin='round';ctx.lineWidth=4;ctx.strokeStyle=PAPER;ctx.strokeText(c.it.t,c.tx+13,c.y);ctx.fillStyle=INK;ctx.fillText(c.it.t,c.tx+13,c.y);
   });
@@ -907,7 +907,7 @@ function introHTML(){
   if(state.multi)return introMulti();
   const ls=D.auras[0].layers.filter(l=>l.f!=='children').sort((a,b)=>b.v-a.v);
   let svg='<svg viewBox="0 0 350 184" width="100%" role="img" aria-label="Example: the shape of Brazil, made of little coloured dots whose colours blend into each other. The largest area is the most common feeling." style="max-width:340px;display:block;margin:10px 0 4px">'+nestedSVG('BR',{x:4,y:8,w:148,h:168},ls,1.3);
-  ls.forEach((l,i)=>{const y=34+i*28;svg+='<circle cx="170" cy="'+y+'" r="5" fill="'+F[l.f].color+'"/><text x="182" y="'+(y+4)+'" font-size="12.5" fill="#2a2da0" font-family="Inter Tight,Helvetica Neue,Arial,sans-serif"><tspan font-weight="700">'+pct(l.v)+'</tspan> '+esc(F[l.f].name.toLowerCase())+'</text>'});
+  ls.forEach((l,i)=>{const y=34+i*28;svg+='<circle cx="170" cy="'+y+'" r="5" fill="'+F[l.f].color+'"/><text x="182" y="'+(y+4)+'" font-size="12.5" fill="#2a2da0" font-family="JetBrains Mono,ui-monospace,Menlo,monospace"><tspan font-weight="700">'+pct(l.v)+'</tspan> '+esc(F[l.f].name.toLowerCase())+'</text>'});
   svg+='</svg>';
   return '<div class="intro"><h2>How to read it</h2>'+svg+'<p class="note" style="margin:0 0 10px">Example: young people, from the ten-country survey (2021). The same result is drawn on each of the ten countries.</p><ul><li>Each <b>country shape</b> is one group of people in one place, at the real size and shape of the country, drawn as little dots. The <b>colours</b> are feelings and they blend into each other. The colours run from left to right across the country, each taking a stretch in proportion to it, so a fully coloured country does not mean everyone feels it. Click for the exact percentages.</li><li>Drag the globe, or pick a place. Click the United States to split its adults by <b>ethnicity, gender or generation</b>.</li></ul><p class="note" style="margin-top:14px">Click a country to label every colour on the globe, and to see the exact questions, sample sizes and cautions.</p></div>';
 }
@@ -1032,7 +1032,7 @@ const wYear=()=>WYEARS[wIdx];
 let wFilter=null;
 const wShown=w=>wFilter?wFilter.has(w.id):(w.year==null||w.year<=wYear());
 const WARM='#c2410c';
-const WF='500 12.5px "Inter Tight","Helvetica Neue",Arial,sans-serif',WF2='400 11px "Inter Tight","Helvetica Neue",Arial,sans-serif',WF3='600 10px "Inter Tight","Helvetica Neue",Arial,sans-serif';
+const WF='500 12.5px "JetBrains Mono",ui-monospace,Menlo,Consolas,monospace',WF2='400 11px "JetBrains Mono",ui-monospace,Menlo,Consolas,monospace',WF3='600 10px "JetBrains Mono",ui-monospace,Menlo,Consolas,monospace';
 function drawWords(){
   const groups=new Map();
   WORDS.forEach(w=>{if(!wShown(w))return;w.places.forEach(p=>{let g=groups.get(p.id);if(!g){g={p,ws:[]};groups.set(p.id,g)}g.ws.push(w)})});
@@ -1289,7 +1289,7 @@ $('#viewseg').addEventListener('click',e=>{const b=e.target.closest('button[data
 resizeG(MAIN);bind(MAIN);watch(MAIN);
 buildMinis();setMulti(true);
 /*DBG*/
-if(document.fonts&&document.fonts.load)Promise.all([document.fonts.load('500 12px "Inter Tight"'),document.fonts.load('600 10px "Inter Tight"')]).then(()=>{dirty=true}).catch(()=>{});
+if(document.fonts&&document.fonts.load)Promise.all([document.fonts.load('500 12px "JetBrains Mono"'),document.fonts.load('600 10px "JetBrains Mono"')]).then(()=>{dirty=true}).catch(()=>{});
 requestAnimationFrame(frame);
 })();
 </script>

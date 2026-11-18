@@ -812,6 +812,7 @@ function bind(g){
       if(state.mode==='story'||state.mode==='wstory'){const h=hitAt(xy(e));if(!h){hidePick();return}haltSpin();showPick(h);return}
       stopSpin();const h=hitAt(xy(e));if(h)haltSpin();
       if(!h){state.sel=null;renderPanel();syncPlaces();dirty=true;return}
+      if(h.np)return;
       if(h.kind==='word')selectWordPlace(h.pid);else if(h.kind==='aura')selectPlace(h.a.place,h.a.id);else if(h.kind==='gap')selectPlace(h.g.place);else selectEvent(h.e);
     }
   });
@@ -1064,7 +1065,19 @@ function drawWords(){
     if(n>1){ctx.font=WF3;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle=PAPER;ctx.fillText(String(n),o.x,o.y+.5)}
     hits.push({kind:'word',pid:it.g.p.id,place:it.g.p,ws:it.g.ws,x:o.x,y:o.y,r:r+9,mark:true});
   });
-  if(curWs)return;
+  if(curWs){
+    // words with no single place in the record: a dashed ring round the whole globe, with a count
+    const np=WORDS.filter(w=>curWs(w)&&!w.places.length);
+    if(np.length){
+      const rr=Rz+6,bx=cx-rr*.72,by=cy-rr*.72,r=np.length>9?10.5:9;
+      ctx.save();ctx.setLineDash([3,5]);ctx.lineWidth=1.4;ctx.strokeStyle=hexA(INK,.55);ctx.beginPath();ctx.arc(cx,cy,rr,0,7);ctx.stroke();ctx.restore();
+      ctx.beginPath();ctx.arc(bx,by,r+5,0,7);ctx.fillStyle=hexA(INK,.12);ctx.fill();
+      ctx.beginPath();ctx.arc(bx,by,r,0,7);ctx.fillStyle=PAPER;ctx.fill();ctx.lineWidth=1.4;ctx.setLineDash([2,2]);ctx.strokeStyle=INK;ctx.stroke();ctx.setLineDash([]);
+      ctx.font=WF3;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle=INK;ctx.fillText(String(np.length),bx,by+.5);
+      hits.push({kind:'word',np:true,pid:'__np',place:{name:'No single place in the record'},ws:np,x:bx,y:by,r:r+9,mark:true});
+    }
+    return;
+  }
   const rects=[],lh=15;
   items.forEach(it=>{
     const o=it.o,ws=it.g.ws.slice().sort((a,b)=>(a.year==null?9999:a.year)-(b.year==null?9999:b.year));
@@ -1165,7 +1178,7 @@ function buildWGrid(){
     const ws=WORDS.filter(m.t).sort((a,b)=>(a.year==null?9999:a.year)-(b.year==null?9999:b.year)||a.term.localeCompare(b.term));
     const drawn=ws.filter(w=>w.places.length).length;
     const el=document.createElement('figure');el.className='mini';el.style.setProperty('--c',INK);el.style.setProperty('--t',mixHex(INK,PAPERBG,.55));
-    el.innerHTML='<figcaption class="cap"><i class="sw"></i><span class="no2">'+String(i+1).padStart(2,'0')+'</span><span class="nm">'+esc(m.name)+'</span><span class="mv n">'+ws.length+(ws.length===1?' word':' words')+(drawn<ws.length?' · '+drawn+' on the map':'')+'</span></figcaption><div class="ms"><canvas tabindex="0" role="img" aria-label="'+esc('Dot globe with the words from '+m.name.toLowerCase()+': '+drawn+' of '+ws.length+' have a place on the globe. The same words are listed under the map. Arrow keys turn the globes.')+'"></canvas><div class="tip" hidden></div></div><div class="wl">'+ws.map(w=>w.places.length?wLine(w):wLine(w).replace('class="wb','class="wb np" title="No single place in the record" data-x="')).join('')+'</div>'+(drawn<ws.length?'<p class="gl2">Dashed words have no single place in the record, so they are listed but not on the map.</p>':'');
+    el.innerHTML='<figcaption class="cap"><i class="sw"></i><span class="no2">'+String(i+1).padStart(2,'0')+'</span><span class="nm">'+esc(m.name)+'</span><span class="mv n">'+ws.length+(ws.length===1?' word':' words')+(drawn<ws.length?' · '+(ws.length-drawn)+' with no place':'')+'</span></figcaption><div class="ms"><canvas tabindex="0" role="img" aria-label="'+esc('Dot globe with the words from '+m.name.toLowerCase()+': '+drawn+' of '+ws.length+' have a place on the globe. The same words are listed under the map. Arrow keys turn the globes.')+'"></canvas><div class="tip" hidden></div></div><div class="wl">'+ws.map(w=>w.places.length?wLine(w):wLine(w).replace('class="wb','class="wb np" title="No single place in the record" data-x="')).join('')+'</div>'+(drawn<ws.length?'<p class="gl2">Dashed words have no single place in the record. They are counted in the dashed ring round the globe, not given a dot.</p>':'');
     const ms=el.querySelector('.ms'),c=el.querySelector('canvas'),g={cv:c,ctx:c.getContext('2d'),stage:ms,tip:el.querySelector('.tip'),hits:[],feel:null,ws:m.t,visible:true,W:0,H:0,dpr:1,R:0,cx:0,cy:0,box:el};
     box.append(el);WMINIS.push(g);resizeG(g);bind(g);watch(g);
   });

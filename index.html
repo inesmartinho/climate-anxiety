@@ -65,6 +65,7 @@ h1{font-size:clamp(30px,4.6vw,44px);line-height:1.05;letter-spacing:-.03em}
 @media(min-width:961px){.c-stage .stage{position:sticky;top:12px;height:clamp(420px,68vh,640px)}}
 canvas{display:block;width:100%;height:100%;cursor:grab;touch-action:pan-y;outline-offset:2px}
 canvas:active{cursor:grabbing}
+.sheet.words .stage canvas{-webkit-mask-image:linear-gradient(90deg,transparent,#000 28px,#000 calc(100% - 28px),transparent),linear-gradient(180deg,transparent,#000 28px,#000 calc(100% - 28px),transparent);-webkit-mask-composite:source-in;mask-image:linear-gradient(90deg,transparent,#000 28px,#000 calc(100% - 28px),transparent),linear-gradient(180deg,transparent,#000 28px,#000 calc(100% - 28px),transparent);mask-composite:intersect}
 canvas:focus-visible,button:focus-visible,input:focus-visible,summary:focus-visible,a:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
 .zoom{position:absolute;right:0;bottom:0;display:flex;gap:6px}
 .zoom button{width:36px;height:36px;padding:0;border-radius:0;font-size:20px;line-height:1;display:grid;place-items:center;background:var(--paper)}
@@ -1023,7 +1024,7 @@ function drawWords(){
   WORDS.forEach(w=>{if(!wShown(w))return;w.places.forEach(p=>{let g=groups.get(p.id);if(!g){g={p,ws:[]};groups.set(p.id,g)}g.ws.push(w)})});
   const sl=state.sel,selIds=new Set(sl&&sl.type==='word'?[sl.id]:sl&&sl.type==='wplace'?WORDS.filter(w=>w.places.some(p=>p.id===sl.pid)).map(w=>w.id):[]);
   const items=[];
-  groups.forEach(g=>{const o=pr(vec(g.p.lon,g.p.lat),1);if(o.z>.08)items.push({g,o,sel:g.ws.some(w=>selIds.has(w.id)),hv:!!(hov&&hov.kind==='word'&&hov.pid===g.p.id)})});
+  groups.forEach(g=>{const o=pr(vec(g.p.lon,g.p.lat),1);if(o.z>.08&&o.x>6&&o.x<W-6&&o.y>6&&o.y<H-6)items.push({g,o,sel:g.ws.some(w=>selIds.has(w.id)),hv:!!(hov&&hov.kind==='word'&&hov.pid===g.p.id)})});
   items.sort((a,b)=>(b.sel-a.sel)||(b.hv-a.hv)||(b.g.ws.length-a.g.ws.length));
   items.forEach(it=>{
     const o=it.o,n=it.g.ws.length,r=(n>1?8.5:6.5)+(it.sel||it.hv?2:0);
@@ -1036,7 +1037,7 @@ function drawWords(){
   items.forEach(it=>{
     const o=it.o,ws=it.g.ws.slice().sort((a,b)=>(a.year==null?9999:a.year)-(b.year==null?9999:b.year));
     let bw=0;const m=ws.map(w=>{ctx.font=WF;const tw=ctx.measureText(w.term).width;ctx.font=WF2;const yw=w.year!=null?ctx.measureText(String(w.year)).width:0;bw=Math.max(bw,tw+(yw?6+yw:0));return {w,tw}});
-    const bh=ws.length*lh,right=o.x+14+bw<=W-4,bx=right?o.x+14:o.x-14-bw,by=clamp(o.y-bh/2,4,Math.max(4,H-bh-4));
+    const bh=ws.length*lh,right=o.x+14+bw<=W-4,bx=clamp(right?o.x+14:o.x-14-bw,4,Math.max(4,W-4-bw)),by=clamp(o.y-bh/2,4,Math.max(4,H-bh-4));
     const rc={x:bx-3,y:by-2,w:bw+6,h:bh+4};
     const hit=rects.some(q=>rc.x<q.x+q.w&&rc.x+rc.w>q.x&&rc.y<q.y+q.h&&rc.y+rc.h>q.y);
     if(hit&&!(it.sel||it.hv))return;

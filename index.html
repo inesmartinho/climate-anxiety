@@ -34,9 +34,9 @@ h1{font-size:clamp(30px,4.6vw,44px);line-height:1.05;letter-spacing:-.01em;text-
 .vbar .mz{margin-left:auto;display:flex;gap:6px}
 .vbar .mz button{width:36px;height:36px;padding:0;font-size:20px;line-height:1;display:grid;place-items:center;background:var(--paper)}
 .vbar .mz button.t{width:auto;padding:0 10px;font-size:11px;letter-spacing:.06em;text-transform:uppercase}
-.vhint{flex:1 1 100%;margin:0;font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);line-height:1.35}
+.vhint{flex:1 1 100%;margin:0;min-height:1.35em;font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);line-height:1.35}
 .vhint b{color:var(--ink);font-weight:500}
-.sheet:not(.multi) .mz,.sheet:not(.multi) .vhint{display:none}
+.sheet:not(.multi) .mz,.sheet:not(.multi) .vhint{visibility:hidden}
 #minis,#wgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0;background:var(--bg);flex:1 1 auto}#minis .mini,#wgrid .mini{box-shadow:0 0 0 .5px var(--ink)}
 .mini{background:var(--bg);margin:0;min-width:0;display:flex;flex-direction:column}
 .mini .cap{display:flex;align-items:flex-start;gap:8px;padding:10px 11px 0;min-height:calc(14px + max(32px,var(--ln,1)*17px))}

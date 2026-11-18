@@ -153,8 +153,9 @@ ul.lim2{padding-left:18px;margin:0}ul.lim2 li{margin:0 0 9px;font-size:14.5px}
 /* words view: toggle, timeline, panel */
 .sheet.words .c-feel,.sheet.words .r-ctl,.sheet.words .c-key,.sheet.words .det,.sheet.words #viewseg,.sheet.words .vlab-v{display:none}
 @media(min-width:961px){.sheet.story .c-stage .stage{height:clamp(300px,calc(100vh - 250px),600px)}.sheet.story .c-stage{position:sticky;top:12px;align-self:flex-start}.sheet.story .c-stage .stage{position:relative;top:auto}}
-.sctl details{margin-top:8px}.sctl summary{cursor:pointer;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--mut)}.sctl details .chips{margin-top:8px;max-height:84px;overflow:auto}
-.sctl{padding:8px 4px 4px}.sctl .lab{margin:0 0 6px}.sctl .chips{gap:6px}.sctl .chip{font-size:12px;padding:3px 9px 3px 7px}
+.sctl details{margin-top:8px}.sctl summary{cursor:pointer;font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink)}.sctl .snames{border-top:1px solid var(--line);padding-top:8px}.sctl details .chips{margin-top:8px;max-height:96px;overflow:auto}
+.sctl{padding:8px 4px 4px}
+@media(max-width:960px){.sctl .chips{flex-wrap:nowrap;overflow-x:auto;max-height:none!important;padding-bottom:4px}.sctl .chip{flex:none;white-space:nowrap}.sctl .lab{font-size:10px}}.sctl .lab{margin:0 0 6px}.sctl .chips{gap:6px}.sctl .chip{font-size:12px;padding:3px 9px 3px 7px}
 .sheet.story .c-feel,.sheet.story .r-ctl,.sheet.story .c-key,.sheet.story .det,.sheet.story #viewseg,.sheet.story .c-time{display:none}
 .sstep{min-height:78vh;display:flex;flex-direction:column;justify-content:center;padding:12px 0;opacity:.3;transition:opacity .35s}
 .sstep.on{opacity:1}
@@ -1209,7 +1210,7 @@ function applyStory(){
 function setStoryStep(i){if(i!==sStep){sStep=i;sTog=new Set()}applyStory()}
 function buildSctl(){
   const c=$('#sctl');
-  c.innerHTML='<p class="lab">Showing one feeling at a time. Tap a colour to add or hide it.</p><div class="chips">'+STORY.map(f=>'<button type="button" class="chip" data-f="'+f+'" aria-pressed="false" style="--c:'+F[f].color+'"><i></i>'+esc(F[f].name)+'</button>').join('')+'</div><details class="snames"><summary>Name countries on the globe</summary><div class="chips">'+[...new Set(D.auras.map(x=>x.place))].map(id=>[id,PL[id].name]).sort((x,y)=>x[1].localeCompare(y[1])).map(q=>'<button type="button" class="chip" data-n="'+q[0]+'" aria-pressed="'+(state.named.has(q[0])?'true':'false')+'" style="--c:#2a2da0"><i></i>'+esc(q[1])+'</button>').join('')+'</div></details><div class="sgap" hidden><button type="button" class="chip" id="sgapb" aria-pressed="false" style="--c:#2a2da0"><i></i>Countries with data: hidden</button></div>';
+  c.innerHTML='<p class="lab">Showing one feeling at a time. Tap a colour to add or hide it.</p><div class="chips">'+STORY.map(f=>'<button type="button" class="chip" data-f="'+f+'" aria-pressed="false" style="--c:'+F[f].color+'"><i></i>'+esc(F[f].name)+'</button>').join('')+'</div><details class="snames" open><summary>Countries: tap to name them on the globe</summary><div class="chips">'+[...new Set(D.auras.map(x=>x.place))].map(id=>[id,PL[id].name]).sort((x,y)=>x[1].localeCompare(y[1])).map(q=>'<button type="button" class="chip" data-n="'+q[0]+'" aria-pressed="'+(state.named.has(q[0])?'true':'false')+'" style="--c:#2a2da0"><i></i>'+esc(q[1])+'</button>').join('')+'</div></details><div class="sgap" hidden><button type="button" class="chip" id="sgapb" aria-pressed="false" style="--c:#2a2da0"><i></i>Countries with data: hidden</button></div>';
   c.hidden=false;
   c.onclick=e=>{const b=e.target.closest('.chip');if(!b)return;if(b.dataset.n){const id=b.dataset.n;state.named.has(id)?state.named.delete(id):state.named.add(id);b.setAttribute('aria-pressed',state.named.has(id)?'true':'false');dirty=true;return}const f=b.id==='sgapb'?'__data':b.dataset.f;sTog.has(f)?sTog.delete(f):sTog.add(f);applyStory()};
 }

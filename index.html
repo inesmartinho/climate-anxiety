@@ -1096,14 +1096,14 @@ function selectWord(id){
   const w=WBY[id];if(!w)return;
   if(w.year!=null&&w.year>wYear()){wIdx=WYEARS.indexOf(w.year);$('#tlr').value=wIdx}
   state.sel={type:'word',id};
-  if(w.places.length){const p=w.places[0];fly(p.lat,p.lon,2.2)}else stopSpin();
+  if(w.places.length){const p=w.places[0];fly(p.lat,p.lon,1)}else stopSpin();
   renderPanel();dirty=true;
 }
 function selectWordPlace(pid){
   const ws=WORDS.filter(w=>wShown(w)&&w.places.some(p=>p.id===pid));
   if(ws.length===1){selectWord(ws[0].id);return}
   const p=ws[0].places.find(q=>q.id===pid);
-  state.sel={type:'wplace',pid};fly(p.lat,p.lon,2.2);renderPanel();dirty=true;
+  state.sel={type:'wplace',pid};fly(p.lat,p.lon,1);renderPanel();dirty=true;
 }
 /* timeline: 1854 to 1975 squeezed into the first 7%, 1975 to 2025 spread over the rest */
 const TLX=y=>y<1975?(y-1850)/125*.07:.07+(y-1975)/50*.9;
@@ -1266,7 +1266,7 @@ function setWStep(i){
   // turn the globe to the place where most of the new words sit
   const cnt={};fresh.forEach(w=>w.places.forEach(p=>{(cnt[p.id]=cnt[p.id]||{p,n:0}).n++}));
   const top=Object.values(cnt).sort((x,y)=>y.n-x.n)[0];
-  if(top&&i<=wSteps.length)fly(top.p.lat,top.p.lon,1.25);
+  if(top&&i<=wSteps.length)fly(top.p.lat,top.p.lon,1);
   if(i>wSteps.length){state.spin=true;$('#spin').setAttribute('aria-pressed','true');target={lon:view.lon,lat:20,z:1}}   // at the end the globe turns by itself, so every dot comes round
 }
 function startWStory(){

@@ -229,7 +229,7 @@ ul.lim2{padding-left:18px;margin:0}ul.lim2 li{margin:0 0 9px;font-size:14.5px}
     <section class="c-stage" aria-label="Globes">
       <div class="vbar">
         <span class="lab">Show</span>
-        <div class="seg mode" id="modeseg" role="group" aria-label="What the globe shows"><button type="button" data-mode="feel" aria-pressed="true">Feelings</button><button type="button" data-mode="words" aria-pressed="false">Words</button><button type="button" data-mode="story" aria-pressed="false">Feelings story</button><button type="button" data-mode="wstory" aria-pressed="false">Words story</button></div>
+        <div class="seg mode" id="modeseg" role="group" aria-label="What the globe shows"><button type="button" data-mode="story" aria-pressed="false">Feelings story</button><button type="button" data-mode="feel" aria-pressed="true">Feelings</button><button type="button" data-mode="words" aria-pressed="false">Words</button><button type="button" data-mode="wstory" aria-pressed="false">Words story</button></div>
         <div class="seg" id="viewseg" role="group" aria-label="View"><button type="button" data-m="multi" aria-pressed="true">Separate maps</button><button type="button" data-m="one" aria-pressed="false">One map</button></div>
         <div class="mz"><button type="button" id="mzin" aria-label="Zoom in">+</button><button type="button" id="mzout" aria-label="Zoom out">−</button><button type="button" id="mrst" class="t" aria-label="Reset view">Reset</button></div>
         <p class="vhint" id="vhint"></p>
@@ -1271,7 +1271,7 @@ function setMulti(on){
 }
 $('#viewseg').addEventListener('click',e=>{const b=e.target.closest('button[data-m]');if(b)setMulti(b.dataset.m==='multi')});
 resizeG(MAIN);bind(MAIN);watch(MAIN);
-buildMinis();setMulti(true);
+buildMinis();setMulti(true);setMode("story");
 /*DBG*/
 if(document.fonts&&document.fonts.load)Promise.all([document.fonts.load('500 12px "JetBrains Mono"'),document.fonts.load('600 10px "JetBrains Mono"')]).then(()=>{dirty=true}).catch(()=>{});
 requestAnimationFrame(frame);

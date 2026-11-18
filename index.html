@@ -724,6 +724,7 @@ function frame(now){
 
 /* ---------- interaction ---------- */
 let spinOff=false;   // the globe keeps turning unless someone presses the spin button to stop it
+function haltSpin(){state.spin=false;$('#spin').setAttribute('aria-pressed','false');$('#hint').style.opacity=0;dirty=true}
 function stopSpin(){$('#hint').style.opacity=0}
 function xy(e){const r=cv.getBoundingClientRect();return {x:e.clientX-r.left,y:e.clientY-r.top}}
 function inHit(h,p){
@@ -776,7 +777,7 @@ function bind(g){
     const was=drag;drag=null;
     if(was&&!was.moved){
       if(state.mode==='story'||state.mode==='wstory')return;
-      stopSpin();const h=hitAt(xy(e));
+      stopSpin();const h=hitAt(xy(e));if(h)haltSpin();
       if(!h){state.sel=null;renderPanel();syncPlaces();dirty=true;return}
       if(h.kind==='word')selectWordPlace(h.pid);else if(h.kind==='aura')selectPlace(h.a.place,h.a.id);else if(h.kind==='gap')selectPlace(h.g.place);else selectEvent(h.e);
     }
@@ -789,7 +790,7 @@ function bind(g){
     else if(e.key==='+'||e.key==='=')setZoom(view.z*1.2);else if(e.key==='-')setZoom(view.z/1.2);
   });
 }
-function setZoom(z){stopSpin();target={lon:view.lon,lat:view.lat,z:clamp(z,.8,3.4)};dirty=true}
+function setZoom(z){haltSpin();target={lon:view.lon,lat:view.lat,z:clamp(z,.8,3.4)};dirty=true}
 ['#zin','#mzin'].forEach(q=>$(q).onclick=()=>setZoom((target?target.z:view.z)*1.25));
 ['#zout','#mzout'].forEach(q=>$(q).onclick=()=>setZoom((target?target.z:view.z)/1.25));
 ['#rst','#mrst'].forEach(q=>$(q).onclick=()=>{stopSpin();target={lon:view.lon,lat:20,z:1};dirty=true});
@@ -799,8 +800,8 @@ const centre=id=>{const k=pshape(id);return k?[SH[k].c[1],SH[k].c[0]]:[PL[id].la
 const angDeg=(a,b)=>Math.acos(clamp(a[0]*b[0]+a[1]*b[1]+a[2]*b[2],-1,1))/rad;
 const zoomFor=ext=>{const g=state.multi&&MINIS[0]?MINIS[0]:MAIN;return clamp(.27*g.W/(g.R*Math.sin(clamp(ext,.3,60)*rad)),1.25,3.4)};
 function showMaps(){if(!state.multi)return;const r=$('#minis').getBoundingClientRect();if(r.top<0||r.top>innerHeight*.45)$('.c-stage').scrollIntoView({behavior:reduce?'auto':'smooth',block:'start'})}
-function selectPlace(id,auraId,z){state.sel={type:'place',place:id,aura:auraId||null};const c=centre(id);fly(c[0],c[1],z||zoomFor(pshape(id)?SH[pshape(id)].ext:3));renderPanel();syncPlaces();dirty=true}
-function selectEvent(e){state.sel={type:'event',e};const ext=Math.max(...e.shapes.map(k=>SH[k].ext+angDeg(e.v,SH[k].cv)));fly(e.lat,e.lon,zoomFor(ext));renderPanel();syncPlaces();dirty=true}
+function selectPlace(id,auraId,z){haltSpin();state.sel={type:'place',place:id,aura:auraId||null};const c=centre(id);fly(c[0],c[1],z||zoomFor(pshape(id)?SH[pshape(id)].ext:3));renderPanel();syncPlaces();dirty=true}
+function selectEvent(e){haltSpin();state.sel={type:'event',e};const ext=Math.max(...e.shapes.map(k=>SH[k].ext+angDeg(e.v,SH[k].cv)));fly(e.lat,e.lon,zoomFor(ext));renderPanel();syncPlaces();dirty=true}
 
 /* ---------- controls ---------- */
 function mkChip(box,id,label,color,on,fn){
@@ -1076,14 +1077,14 @@ function wordsPanel(){
   const s=state.sel;
   return !s||(s.type!=='word'&&s.type!=='wplace')?wordsIntro():s.type==='word'?wordCard(WBY[s.id]):wplaceCard(s.pid);
 }
-function selectWord(id){
+function selectWord(id){haltSpin();
   const w=WBY[id];if(!w)return;
   if(w.year!=null&&w.year>wYear()){wIdx=WYEARS.indexOf(w.year);$('#tlr').value=wIdx}
   state.sel={type:'word',id};
   if(w.places.length){const p=w.places[0];fly(p.lat,p.lon,1)}else stopSpin();
   renderPanel();dirty=true;
 }
-function selectWordPlace(pid){
+function selectWordPlace(pid){haltSpin();
   const ws=WORDS.filter(w=>wShown(w)&&w.places.some(p=>p.id===pid));
   if(ws.length===1){selectWord(ws[0].id);return}
   const p=ws[0].places.find(q=>q.id===pid);

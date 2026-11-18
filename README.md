@@ -3,6 +3,7 @@
 Interactive web experience for the "Make sense" workshop (Master Digital Experience Design, ECAL).
 
 - `index.html`: the experience (single self-contained file, data embedded)
+- `climate_emotion_map.html`: the 3D globe "map of emotions" (single self-contained file, data embedded)
 - `data/`: the source CSVs
 
 ## Data sources
@@ -10,3 +11,5 @@ Yale Program on Climate Change Communication (psychological distress tables, 202
 
 ## Limits
 Self-reported feelings and screening scores, not diagnoses. Mostly US adults and a ten-country youth sample, not a world estimate. Vocabulary years are earliest-known documented uses, not coinage dates.
+
+The globe map's country shapes and the gaps between grey land dots are my own rough drawings, not an official border dataset; small countries and islands are not separated.

@@ -329,6 +329,8 @@ const rgbOf=h=>_rgb[h]||(_rgb[h]=(n=>[n>>16,(n>>8)&255,n&255])(parseInt(h.slice(
 const toLin=c=>{c/=255;return c<=.04045?c/12.92:Math.pow((c+.055)/1.055,2.4)},toSrgb=c=>Math.round(255*(c<=.0031308?12.92*c:1.055*Math.pow(c,1/2.4)-.055));
 const _lin={};const linOf=h=>_lin[h]||(_lin[h]=rgbOf(h).map(toLin));
 /* mix two colours in linear light, so orange into blue goes through purple, not grey */
+/* the higher the share, the stronger the colour: a low share is pale, 75% or more is the full colour */
+const strong=(c,v)=>mixHex('#ececec',c,.3+.7*Math.min(1,Math.max(0,v/75)));
 const mixHex=(a,b,t)=>{const A=linOf(a),B=linOf(b);return 'rgb('+toSrgb(A[0]+(B[0]-A[0])*t)+','+toSrgb(A[1]+(B[1]-A[1])*t)+','+toSrgb(A[2]+(B[2]-A[2])*t)+')'};
 const _pat={};
 /* small repeating textures: adults over young people (dots), no figure (grey hatch), red areas (red hatch) */
@@ -522,7 +524,7 @@ function draw(){
   const paintBlend=(v,it)=>{
     ctx.save();pathParts(v.base.parts);ctx.clip();
     if(it.length){
-      const bg=it[0].l.f.indexOf('bg_')===0?F[it[0].l.f].color:null,fs=(bg?it.slice(1):it).map(q=>({c:F[q.l.f].color,w:Math.max(0,q.l.v*easeOut(q.l.p))})),st=gradStops(fs,bg);
+      const bg=it[0].l.f.indexOf('bg_')===0?F[it[0].l.f].color:null,fs=(bg?it.slice(1):it).map(q=>({c:strong(F[q.l.f].color,q.l.v),w:Math.max(0,q.l.v*easeOut(q.l.p))})),st=gradStops(fs,bg);
       if(st.length){const bb=v.bb,g=ctx.createLinearGradient(bb[0],0,bb[2]+.01,0);st.forEach(([o,c])=>g.addColorStop(clamp(o,0,1),c));ctx.fillStyle=g;ctx.fillRect(bb[0]-2,bb[1]-2,bb[2]-bb[0]+4,bb[3]-bb[1]+4)}
     }
     ctx.restore();
@@ -862,7 +864,7 @@ function gradStops(fs,bg){
 let _nid=0;
 function nestedSVG(key,box,layers,mode,abs){
   /* same recipe as the globe: blended colours, read through a lattice of little dots */
-  const id='nb'+(_nid++),bgc=abs?F['bg_'+layers[0].f].color:null,fs=abs?[{c:F[layers[0].f].color,w:layers[0].v}]:layers.slice().sort((x,y)=>y.v-x.v).map(l=>({c:F[l.f].color,w:l.v})),st=gradStops(fs,bgc);
+  const id='nb'+(_nid++),bgc=abs?F['bg_'+layers[0].f].color:null,fs=abs?[{c:strong(F[layers[0].f].color,layers[0].v),w:layers[0].v}]:layers.slice().sort((x,y)=>y.v-x.v).map(l=>({c:strong(F[l.f].color,l.v),w:l.v})),st=gradStops(fs,bgc);
   const P=box.w>100?5:box.w>60?4:3,r1=P*.23;
   const dots=mode==='two'?'<circle cx="'+P/4+'" cy="'+P/4+'" r="'+(r1*1.1).toFixed(2)+'" fill="#fff"/><circle cx="'+P*.75+'" cy="'+P*.75+'" r="'+(r1*.7).toFixed(2)+'" fill="#fff"/>':'<circle cx="'+P/4+'" cy="'+P/4+'" r="'+r1.toFixed(2)+'" fill="#fff"/><circle cx="'+P*.75+'" cy="'+P*.75+'" r="'+r1.toFixed(2)+'" fill="#fff"/>';
   let s='<defs><clipPath id="c'+id+'"><path d="'+shapePath(key,box,1)+'"/></clipPath><pattern id="p'+id+'" width="'+P+'" height="'+P+'" patternUnits="userSpaceOnUse">'+dots+'</pattern><mask id="k'+id+'" maskUnits="userSpaceOnUse" x="'+(box.x-2)+'" y="'+(box.y-2)+'" width="'+(box.w+4)+'" height="'+(box.h+4)+'"><rect x="'+(box.x-2)+'" y="'+(box.y-2)+'" width="'+(box.w+4)+'" height="'+(box.h+4)+'" fill="url(#p'+id+')"/></mask><linearGradient id="lg'+id+'" gradientUnits="userSpaceOnUse" x1="'+box.x+'" y1="0" x2="'+(box.x+box.w)+'" y2="0">'+st.map(q=>'<stop offset="'+q[0].toFixed(3)+'" stop-color="'+q[1]+'"/>').join('')+'</linearGradient></defs>';
@@ -881,13 +883,13 @@ const KEYS=[
  '<span><svg width="34" height="30" viewBox="0 0 34 30" aria-hidden="true"><path d="'+shapePath('BR',{x:2,y:1,w:30,h:28},1)+'" fill="#ececec"/><path d="'+shapePath('BR',{x:2,y:1,w:30,h:28},1)+'" fill="url(#khgrey)"/></svg>Grey stripes: a study exists here, but there is no single figure to draw (none given, only separate groups, or scale scores instead of shares). Where university students also have figures, the stripes only show while that group is hidden.</span>',
  '<span><svg width="34" height="30" viewBox="0 0 34 30" aria-hidden="true">'+nestedSVG('BR',{x:2,y:1,w:30,h:28},[{v:1,f:'screen'}])+'</svg>Grey dots: a general mental-health screen. Not a climate feeling.</span>',
  '<span><svg width="34" height="22" viewBox="0 0 34 22" aria-hidden="true"><circle cx="11" cy="11" r="9" fill="url(#kge8710a)"/><circle cx="11" cy="11" r="5.5" fill="url(#kg2f4cff)"/><circle cx="27" cy="11" r="5" fill="url(#kge8710a)"/></svg>Soft circles: groups within US adults (ethnicity, gender, generation). They are slices of a population, not places.</span>'];
-const KEY1M='<span><svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true">'+nestedSVG('BR',{x:1,y:1,w:32,h:32},[{f:'generic',v:40}],0,true)+'</svg>Each map shows one measure, mostly a feeling. The colour fills a country from left to right, as far as the share of the group who report that feeling, so a half-filled country is about half the group. The pale dots are the part that is not filled. Read the percentages for the exact figure.</span>';
+const KEY1M='<span><svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true">'+nestedSVG('BR',{x:1,y:1,w:32,h:32},[{f:'generic',v:40}],0,true)+'</svg>Each map shows one measure, mostly a feeling. The colour fills a country from left to right, as far as the share of the group who report that feeling, so a half-filled country is about half the group. The higher the share, the stronger the colour. The pale dots are the part that is not filled. Read the percentages for the exact figure.</span>';
 function renderKey(){const k=KEYS.slice();if(state.multi)k[0]=KEY1M;$('#key').innerHTML=k.join('')}
 
 /* ---------- panel ---------- */
 const detail=$('#detail');
 function introMulti(){
-  return '<div class="intro"><h2>How to read it</h2><ul><li>Each map shows <b>one feeling</b>. A country is one group of people in one place, drawn at the real size and shape of the country, as little dots.</li><li>The colour <b>fills the country from left to right, as far as the share who report that feeling</b>, so a half-filled country is about half the group. Hover a country for the figure.</li><li>Drag any map and they all turn together. <b>Click a country</b> and its figure shows above every map, with the exact questions and cautions here.</li><li>A country is blank on a map when its survey did not ask that question. Blank is not zero.</li><li>The <b>hesitant to have children</b> map is not a feeling. It is an attitude, the share who say climate change makes them hesitant, or unwilling, to have children, and it is not a decision. The surveys behind it ask four different questions, so read it country by country.</li></ul><p class="note" style="margin-top:14px">Where a place has two groups, the first is the bigger dots and the second the smaller dots between them: young people, then university students, then adults. Different surveys ask different questions, so compare only within one survey.</p></div>';
+  return '<div class="intro"><h2>How to read it</h2><ul><li>Each map shows <b>one feeling</b>. A country is one group of people in one place, drawn at the real size and shape of the country, as little dots.</li><li>The colour <b>fills the country from left to right, as far as the share who report that feeling</b>, so a half-filled country is about half the group. The higher the share, the stronger the colour. Hover a country for the figure.</li><li>Drag any map and they all turn together. <b>Click a country</b> and its figure shows above every map, with the exact questions and cautions here.</li><li>A country is blank on a map when its survey did not ask that question. Blank is not zero.</li><li>The <b>hesitant to have children</b> map is not a feeling. It is an attitude, the share who say climate change makes them hesitant, or unwilling, to have children, and it is not a decision. The surveys behind it ask four different questions, so read it country by country.</li></ul><p class="note" style="margin-top:14px">Where a place has two groups, the first is the bigger dots and the second the smaller dots between them: young people, then university students, then adults. Different surveys ask different questions, so compare only within one survey.</p></div>';
 }
 function introHTML(){
   if(state.multi)return introMulti();

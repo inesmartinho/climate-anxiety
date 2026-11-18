@@ -1255,7 +1255,7 @@ function storyHTML(){
   let h='<div class="story"><section class="sstep" data-i="0"><div class="sin"><p class="lab">Scroll</p><h2>What do people feel about a changing world?</h2><p>Solastalgia is the grief of watching your home change. This map gathers what published surveys have asked different generations about climate change: whether they feel <b>worried, afraid of the future, anxious, powerless, distressed, or hesitant to have children.</b></p></div></section>';
   STORY.forEach((f,i)=>{
     const fe=F[f],ft=feelFacts(f),b=ft.best;
-    h+='<section class="sstep" data-i="'+(i+1)+'"><div class="sin"><h2>'+esc(fe.name)+'</h2>'
+    h+='<section class="sstep" data-i="'+(i+1)+'"><div class="sin"><h2 style="color:'+fe.color+'">'+esc(fe.name)+'</h2>'
       +(b?'<p class="sbig" style="color:'+fe.color+'">'+pct(b.l.v)+(b.l.prov?'<small> provisional</small>':'')+'</p><p>'+esc(b.l.ind)+'</p>':'')
       +(ft.nrk>1?'<dl class="hilo"><div><dt>Most</dt><dd>'+esc(PL[ft.top.place].name)+' <span>'+pct(ft.top.v)+'</span></dd></div><div><dt>Least</dt><dd>'+esc(PL[ft.low.place].name)+' <span>'+pct(ft.low.v)+'</span></dd></div></dl>':(ft.nrk===1&&b&&b.a.pooled?'<dl class="hilo"><div><dt>Most</dt><dd>'+esc(((b.a.n||'').match(/(\d+) countries/)||[0,'Several'])[1])+' countries, pooled <span>'+pct(b.l.v)+'</span><small class="pl">'+esc(D.auras.filter(x=>x.pooled&&x.n===b.a.n&&x.layers.some(l=>l.f===f)).map(x=>PL[x.place].name).sort().join(', '))+'</small></dd></div><div><dt>Least</dt><dd>'+esc(PL[ft.top.place].name)+' <span>'+pct(ft.top.v)+'</span></dd></div></dl>':''))+'</div></section>';
   });

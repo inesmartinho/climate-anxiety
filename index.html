@@ -181,7 +181,7 @@ ul.lim2{padding-left:18px;margin:0}ul.lim2 li{margin:0 0 9px;font-size:14.5px}
 .wt i{font-style:normal;opacity:.7;margin-left:5px}
 .sheet.wstory .c-time{display:none!important}
 .c-time{display:none;padding:clamp(12px,2vw,18px)}
-.sheet.words .c-time{display:block}
+.sheet.words .c-time{display:block}.sheet.wg #wgrid,.sheet.wg .wleg,.sheet.wg #timewrap>:not(details),.sheet.wg #timewrap summary{display:none!important}
 .vbar .seg.mode{margin-right:2px}
 .tl-head{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;margin:0 0 6px}
 .tl-head input[type=range]{flex:1 1 200px;min-width:140px;accent-color:var(--ink)}
@@ -1207,7 +1207,7 @@ function setMode(m){
   MAIN.cv.setAttribute('aria-label',ARIA[m]||MAIN_ARIA);
   const FAM=m==='story'||m==='feel'?['story','feel']:m==='wstory'||m==='words'?['wstory','words']:null,fvb=$('#fview').querySelectorAll('button');
   $('#fview').hidden=!FAM;
-  if(FAM)fvb.forEach((b,i)=>{b.dataset.fv=FAM[i];b.setAttribute('aria-pressed',String(FAM[i]===m))});
+  if(FAM)fvb.forEach((b,i)=>{b.dataset.fv=FAM[i];b.setAttribute('aria-pressed',String(FAM[i]===m));if(i)b.textContent=FAM[1]==='words'?'List':'Grid'});
   if(m==='feel')$('#modeseg button[data-mode=story]').setAttribute('aria-pressed','true');
   if(m==='words')$('#modeseg button[data-mode=wstory]').setAttribute('aria-pressed','true');
   $('#hint').textContent=m==='words'?'Drag to turn the globe · click a dot':m==='story'?'Scroll to see the next feeling':m==='wstory'?'Scroll to add the next words':'Drag to turn the globe · click a country';
@@ -1240,7 +1240,7 @@ function storyHTML(){
   });
   const nPl=new Set(D.auras.map(x=>x.place)).size;
   h+='<section class="sstep" data-i="'+(STORY.length+1)+'"><div class="sin"><p class="lab">Where nobody has asked</p><h2>An empty place is not a calm place</h2><p>Here are only the places with no figure at all. The surveys behind this map give figures for '+nPl+' places. The dark dots are the land where nobody has published a comparable number.</p><p>No data does not mean people there feel nothing. It means the question was never asked, or the answer is not public. Many of these places are among the most exposed to climate change, so the silence on the map says something about who gets asked, and who does not.</p><p class="wm">Turn the globe to see how much of it is dark. Use the button under the globe to bring back the countries that have data.</p></div></section>';
-  h+='<section class="sstep" data-i="'+(STORY.length+2)+'"><div class="sin"><p class="lab">All together</p><h2>Every feeling, on one globe</h2><p>Each country now carries, from left to right, the colours of the feelings its surveys asked about. Explore it freely.</p><p class="wm">Drag the globe and hover a country to read it.</p><p><button type="button" class="tg" data-go="feel">Open the feelings grid</button> <button type="button" class="tg" data-go="words">Open the words grid</button></p></div></section></div>';
+  h+='<section class="sstep" data-i="'+(STORY.length+2)+'"><div class="sin"><p class="lab">All together</p><h2>Every feeling, on one globe</h2><p>Each country now carries, from left to right, the colours of the feelings its surveys asked about. Explore it freely.</p><p class="wm">Drag the globe and hover a country to read it.</p><p><button type="button" class="tg" data-go="feel">Open the feelings grid</button> <button type="button" class="tg" data-go="words">Open the word list</button></p></div></section></div>';
   return h;
 }
 let sStep=0,sTog=new Set();
@@ -1311,7 +1311,7 @@ function wstoryHTML(){
     const placed=st.ws.filter(w=>w.places.length).length,free=st.ws.length-placed;
     h+='<section class="sstep" data-i="'+(i+1)+'"><div class="sin"><p class="lab">'+esc(st.lab)+' · '+(i+1)+' of '+wSteps.length+'</p><h2>'+esc(st.h)+'</h2><p>'+esc(st.p)+'</p><p class="wts">'+st.ws.map(chip).join('')+'</p><p class="wm">'+placed+(placed===1?' word is':' words are')+' drawn on the globe'+(free?'; '+free+(free===1?' has':' have')+' no single place, so '+(free===1?'it is':'they are')+' only listed':'')+'.</p></div></section>';
   });
-  h+='<section class="sstep" data-i="'+(wSteps.length+1)+'"><div class="sin"><p class="lab">All together</p><h2>Every word, on one globe</h2><p>'+WORDS.length+' words, '+WORDS.filter(w=>w.places.length).length+' of them with a place. Drag the globe and hover a dot to read the words. A dot is the place a source names, not the only place a word is used.</p><p><button type="button" class="tg" data-go="words">Open the words grid</button> <button type="button" class="tg" data-go="feel">Open the feelings grid</button></p></div></section></div>';
+  h+='<section class="sstep" data-i="'+(wSteps.length+1)+'"><div class="sin"><p class="lab">All together</p><h2>Every word, on one globe</h2><p>'+WORDS.length+' words, '+WORDS.filter(w=>w.places.length).length+' of them with a place. Drag the globe and hover a dot to read the words. A dot is the place a source names, not the only place a word is used.</p><p><button type="button" class="tg" data-go="words">Open the word list</button> <button type="button" class="tg" data-go="feel">Open the feelings grid</button></p></div></section></div>';
   return h;
 }
 function setWStep(i){
@@ -1335,7 +1335,7 @@ function startWStory(){
 }
 function syncWG(){
   const wg=state.mode==='words'&&state.wgrid;
-  $('#wgrid').hidden=!wg;$('.sheet').classList.toggle('wg',wg);
+  $('#wgrid').hidden=!wg;$('.sheet').classList.toggle('wg',wg);if(wg)$('#timewrap details').open=true;
   $('#onemap').hidden=state.multi||wg;
   dirty=true;
 }

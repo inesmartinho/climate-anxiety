@@ -36,7 +36,7 @@ h1{font-size:clamp(30px,4.6vw,44px);line-height:1.05;letter-spacing:-.03em}
 .vhint{flex:1 1 100%;margin:0;font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);line-height:1.35}
 .vhint b{color:var(--ink);font-weight:500}
 .sheet:not(.multi) .mz,.sheet:not(.multi) .vhint{display:none}
-#minis{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;background:var(--ink);flex:1 1 auto}
+#minis,#wgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;background:var(--ink);flex:1 1 auto}
 .mini{background:var(--bg);margin:0;min-width:0;display:flex;flex-direction:column}
 .mini .cap{display:flex;align-items:flex-start;gap:8px;padding:10px 11px 0;min-height:calc(14px + max(32px,var(--ln,1)*17px))}
 .mini .sw{flex:none;width:15px;height:12px;margin-top:2px;background:radial-gradient(circle at 50% 50%,var(--c) 0,var(--c) 28%,var(--t) 100%)}
@@ -50,7 +50,7 @@ h1{font-size:clamp(30px,4.6vw,44px);line-height:1.05;letter-spacing:-.03em}
 .mini .ms{position:relative;width:100%;aspect-ratio:1/1;touch-action:pan-y;user-select:none;-webkit-user-select:none}
 .mini .offmsg{position:absolute;inset:0;display:none;place-items:center;text-align:center;padding:20px;font-size:13px;color:var(--mut)}
 .mini.off .offmsg{display:grid}.mini.off canvas{visibility:hidden}
-.mini .gl2{margin:0;padding:0 11px 11px;font-size:12px;color:var(--mut);line-height:1.35}
+.mini .wl{margin:0;padding:0 11px 12px;display:flex;flex-wrap:wrap;gap:6px}.sheet.wg .tl-head{display:none}.mini .gl2{margin:0;padding:0 11px 11px;font-size:12px;color:var(--mut);line-height:1.35}
 .mini.lg{padding:14px;gap:10px;justify-content:flex-start;grid-column:1/-1}
 .mini.lg .lab{margin:0}
 .mini.lg .note{margin:0;font-size:12.5px;line-height:1.4}
@@ -59,7 +59,7 @@ h1{font-size:clamp(30px,4.6vw,44px);line-height:1.05;letter-spacing:-.03em}
 .sc b{font-weight:500}
 @container cs (min-width:700px){#minis{grid-template-columns:repeat(3,minmax(0,1fr))}.mini.lg{grid-column:auto}}
 @container cs (max-width:759px){.mini.lg .sc svg{width:54px;height:59px}.mini .no2{display:none}.mini .cap{flex-wrap:wrap;row-gap:3px;min-height:calc(18px + 32px + var(--ln,1)*17px)}.mini .nm{flex:1 1 0;letter-spacing:.06em;font-size:11px}.mini .mv{flex:1 1 100%;margin-left:0;text-align:left}.vbar .lab{display:none}.vbar .mz button{width:32px;height:32px}.vbar .mz button.t{width:auto}.vbar .seg button{padding:6px 9px;font-size:12.5px}}
-@container cs (max-width:300px){#minis{grid-template-columns:minmax(0,1fr)}}
+@container cs (max-width:300px){#minis,#wgrid{grid-template-columns:minmax(0,1fr)}}
 @media(min-width:961px){.multi .right #detail{position:sticky;top:12px;max-height:calc(100vh - 24px);overflow:auto}}
 .stage{position:relative;width:100%;height:clamp(340px,92vw,520px);touch-action:pan-y;user-select:none;-webkit-user-select:none}
 @media(min-width:961px){.c-stage .stage{position:sticky;top:12px;height:clamp(420px,68vh,640px)}}
@@ -152,7 +152,7 @@ ul.lim2{padding-left:18px;margin:0}ul.lim2 li{margin:0 0 9px;font-size:14.5px}
 }
 @media(max-width:560px){.key{grid-template-columns:minmax(0,1fr)}.zoom button{width:34px;height:34px}.zoom button.t{font-size:10px}}
 /* words view: toggle, timeline, panel */
-.sheet.words .c-feel,.sheet.words .r-ctl,.sheet.words .c-key,.sheet.words .det,.sheet.words #viewseg,.sheet.words .vlab-v{display:none}
+.sheet.words .c-feel,.sheet.words .r-ctl,.sheet.words .c-key,.sheet.words .det,.sheet.words .vlab-v{display:none}
 @media(min-width:961px){.sheet.story .c-stage .stage{height:clamp(300px,calc(100vh - 250px),600px)}.sheet.story .c-stage{position:sticky;top:12px;align-self:flex-start}.sheet.story .c-stage .stage{position:relative;top:auto}}
 .sctl details{margin-top:8px}.sctl summary{cursor:pointer;font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink)}.sctl .snames{border-top:1px solid var(--line);padding-top:8px}.sctl details .chips{margin-top:8px;max-height:96px;overflow:auto}
 .sctl{padding:8px 4px 4px}
@@ -231,7 +231,7 @@ ul.lim2{padding-left:18px;margin:0}ul.lim2 li{margin:0 0 9px;font-size:14.5px}
         <span class="lab">Stories</span>
         <div class="seg mode" id="modeseg" role="group" aria-label="Stories"><button type="button" data-mode="story" aria-pressed="false">Feelings story</button><button type="button" data-mode="wstory" aria-pressed="false">Words story</button></div>
         <span class="lab">Or explore</span>
-        <div class="seg mode" id="modeseg2" role="group" aria-label="Explore on your own"><button type="button" data-mode="feel" aria-pressed="true" title="All the feelings from the story, side by side">Grid view</button><button type="button" data-mode="words" aria-pressed="false">Words</button></div>
+        <div class="seg mode" id="modeseg2" role="group" aria-label="Explore on your own"><button type="button" data-mode="feel" aria-pressed="true" title="All the feelings from the story, side by side">Feelings grid</button><button type="button" data-mode="words" aria-pressed="false" title="The words, one map for each period, with their years">Words grid</button></div>
         <div class="seg" id="viewseg" role="group" aria-label="View"><button type="button" data-m="multi" aria-pressed="true">Separate maps</button><button type="button" data-m="one" aria-pressed="false">One map</button></div>
         <div class="mz"><button type="button" id="mzin" aria-label="Zoom in">+</button><button type="button" id="mzout" aria-label="Zoom out">−</button><button type="button" id="mrst" class="t" aria-label="Reset view">Reset</button></div>
         <p class="vhint" id="vhint"></p>
@@ -247,6 +247,7 @@ ul.lim2{padding-left:18px;margin:0}ul.lim2 li{margin:0 0 9px;font-size:14.5px}
         <div class="sctl" id="sctl" hidden></div>
       </div>
       <div id="minis"></div>
+      <div id="wgrid" hidden></div>
     </section>
     <aside class="cell right"><div id="detail" aria-live="polite"></div></aside>
   </div>
@@ -355,7 +356,7 @@ D.events.forEach(e=>{e.v=vec(e.lon,e.lat)});
 D.gaps=[];   // places where a study exists but nothing was extracted are not drawn
 D.gaps.forEach(g=>{g.v=SH[g.shape].cv});
 const RMAX=9,reach=v=>Math.max(.9,RMAX*v/100);
-const state={pops:new Set(['youth','adults','students']),feels:new Set(D.feel.map(f=>f.id)),split:'all',events:true,spin:!reduce,sel:null,multi:true,mode:'feel',named:new Set()};
+const state={wgrid:true,pops:new Set(['youth','adults','students']),feels:new Set(D.feel.map(f=>f.id)),split:'all',events:true,spin:!reduce,sel:null,multi:true,mode:'feel',named:new Set()};
 const view={lon:20,lat:20,z:1};let target=null;
 function auraOn(a){if(!state.pops.has(a.pop))return false;if(a.splitDim)return a.splitDim===state.split;if(a.id==='US-adults')return state.split==='all';return true}
 /* hesitancy about having children is an attitude, not a feeling, but it has its own square and is drawn on the one-map globe too */
@@ -373,13 +374,13 @@ for(let lo=-180;lo<180;lo+=30){const l=[];for(let la=-90;la<=90;la+=6)l.push(vec
 
 /* ---------- canvas ---------- */
 /* one drawing routine serves every globe: useGlobe(g) points the shared variables at one of them */
-let cv=null,stage=null,tip=null,ctx=null,hits=[],G=null,curFeel=null;
+let cv=null,stage=null,tip=null,ctx=null,hits=[],G=null,curFeel=null,curWs=null;
 let W=0,H=0,dpr=1,R=0,cx=0,cy=0,Rz=0,cL=1,sL=0,cA=1,sA=0,dirty=true,hov=null,drag=null;
 const MAIN={cv:$('#g'),stage:$('#stage'),tip:$('#tip'),hits:[],feel:null,visible:true,off:false,W:0,H:0,dpr:1,R:0,cx:0,cy:0};
 MAIN.ctx=MAIN.cv.getContext('2d');
-const MINIS=[];
-function useGlobe(g){G=g;cv=g.cv;ctx=g.ctx;stage=g.stage;tip=g.tip;hits=g.hits;W=g.W;H=g.H;dpr=g.dpr;R=g.R;cx=g.cx;cy=g.cy;curFeel=g.feel;setCam()}
-function resizeG(g){const s=g.stage;g.dpr=Math.min(2,window.devicePixelRatio||1);g.W=s.clientWidth;g.H=s.clientHeight;g.cv.width=Math.round(g.W*g.dpr);g.cv.height=Math.round(g.H*g.dpr);g.cx=g.W/2;g.cy=g.feel?g.H*.5:g.H*.52;g.R=Math.min(g.W,g.H)*(g.feel?.45:.42);dirty=true}
+const MINIS=[],WMINIS=[];
+function useGlobe(g){G=g;cv=g.cv;ctx=g.ctx;stage=g.stage;tip=g.tip;hits=g.hits;W=g.W;H=g.H;dpr=g.dpr;R=g.R;cx=g.cx;cy=g.cy;curFeel=g.feel;curWs=g.ws||null;setCam()}
+function resizeG(g){const s=g.stage;g.dpr=Math.min(2,window.devicePixelRatio||1);g.W=s.clientWidth;g.H=s.clientHeight;g.cv.width=Math.round(g.W*g.dpr);g.cv.height=Math.round(g.H*g.dpr);g.cx=g.W/2;g.cy=(g.feel||g.ws)?g.H*.5:g.H*.52;g.R=Math.min(g.W,g.H)*((g.feel||g.ws)?.45:.42);dirty=true}
 function watch(g){new IntersectionObserver(es=>{g.visible=es[0].isIntersecting;if(g.visible)dirty=true},{threshold:0}).observe(g.stage);new ResizeObserver(()=>resizeG(g)).observe(g.stage)}
 function setCam(){cL=Math.cos(view.lon*rad);sL=Math.sin(view.lon*rad);cA=Math.cos(view.lat*rad);sA=Math.sin(view.lat*rad);Rz=R*view.z}
 function pr(v,k){const x1=v[0]*cL-v[2]*sL,z1=v[0]*sL+v[2]*cL,y2=v[1]*cA-z1*sA,z2=v[1]*sA+z1*cA;return {x:cx+x1*k*Rz,y:cy-y2*k*Rz,z:z2}}
@@ -695,6 +696,7 @@ function draw(){
 }
 
 function drawAll(){
+  if(state.mode==='words'&&state.wgrid){WMINIS.forEach(g=>{if(!g.visible)return;useGlobe(g);draw()});return}
   if(!state.multi){useGlobe(MAIN);draw();return}
   MINIS.forEach(g=>{if(!g.visible||g.off)return;useGlobe(g);draw()});
 }
@@ -717,7 +719,7 @@ function step(dt){
 }
 function frame(now){
   requestAnimationFrame(frame);
-  const any=state.multi?MINIS.some(g=>g.visible&&!g.off):MAIN.visible;
+  const any=state.mode==='words'&&state.wgrid?WMINIS.some(g=>g.visible):state.multi?MINIS.some(g=>g.visible&&!g.off):MAIN.visible;
   if(!any||document.hidden){last=now;return}
   const dt=Math.min(.05,(now-last)/1000);last=now;
   if(step(dt)||dirty){drawAll();dirty=false}
@@ -1019,18 +1021,19 @@ const WARM='#c2410c';
 const WF='500 12.5px "JetBrains Mono",ui-monospace,Menlo,Consolas,monospace',WF2='400 11px "JetBrains Mono",ui-monospace,Menlo,Consolas,monospace',WF3='600 10px "JetBrains Mono",ui-monospace,Menlo,Consolas,monospace';
 function drawWords(){
   const groups=new Map();
-  WORDS.forEach(w=>{if(!wShown(w))return;w.places.forEach(p=>{let g=groups.get(p.id);if(!g){g={p,ws:[]};groups.set(p.id,g)}g.ws.push(w)})});
+  WORDS.forEach(w=>{if(!(curWs?curWs(w):wShown(w)))return;w.places.forEach(p=>{let g=groups.get(p.id);if(!g){g={p,ws:[]};groups.set(p.id,g)}g.ws.push(w)})});
   const sl=state.sel,selIds=new Set(sl&&sl.type==='word'?[sl.id]:sl&&sl.type==='wplace'?WORDS.filter(w=>w.places.some(p=>p.id===sl.pid)).map(w=>w.id):[]);
   const items=[];
   groups.forEach(g=>{const o=pr(vec(g.p.lon,g.p.lat),1);if(o.z>.08&&o.x>6&&o.x<W-6&&o.y>6&&o.y<H-6)items.push({g,o,sel:g.ws.some(w=>selIds.has(w.id)),hv:!!(hov&&hov.kind==='word'&&hov.pid===g.p.id)})});
   items.sort((a,b)=>(b.sel-a.sel)||(b.hv-a.hv)||(b.g.ws.length-a.g.ws.length));
   items.forEach(it=>{
-    const o=it.o,n=it.g.ws.length,r=(n>1?8.5:6.5)+(it.sel||it.hv?2:0);
+    const o=it.o,n=it.g.ws.length,r=curWs?(n>1?7.5:4.8)+(it.sel||it.hv?1.5:0):(n>1?8.5:6.5)+(it.sel||it.hv?2:0);
     ctx.beginPath();ctx.arc(o.x,o.y,r+6,0,7);ctx.fillStyle=hexA(it.g.p.south?WARM:INK,it.sel?.22:.12);ctx.fill();
     ctx.beginPath();ctx.arc(o.x,o.y,r,0,7);ctx.fillStyle=it.g.p.south?WARM:INK;ctx.fill();ctx.lineWidth=1.6;ctx.strokeStyle=PAPER;ctx.stroke();
     if(n>1){ctx.font=WF3;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle=PAPER;ctx.fillText(String(n),o.x,o.y+.5)}
     hits.push({kind:'word',pid:it.g.p.id,place:it.g.p,ws:it.g.ws,x:o.x,y:o.y,r:r+9,mark:true});
   });
+  if(curWs)return;
   const rects=[],lh=15;
   items.forEach(it=>{
     const o=it.o,ws=it.g.ws.slice().sort((a,b)=>(a.year==null?9999:a.year)-(b.year==null?9999:b.year));
@@ -1051,7 +1054,7 @@ function drawWords(){
 const wLine=w=>'<button type="button" class="wb'+(w.south?' s':'')+(state.sel&&state.sel.type==='word'&&state.sel.id===w.id?' on':'')+'" data-word="'+w.id+'">'+esc(w.term)+(w.year!=null?'<span>'+w.year+'</span>':'')+'</button>';
 function wordsIntro(){
   const free=WORDS.filter(w=>!w.places.length);
-  return '<div class="intro wcard"><h2 style="margin-top:0">How to read it</h2><ul><li>Each dot is a place where a word was <b>introduced, first documented or made prominent</b>. A number inside a dot means several words. Tap a dot to read them, or use the slider under the map to watch the words appear over time.</li><li>The year is the one the source gives. Its label says what it records, and several are <b>not</b> the first use or the coinage.</li><li>A dot is the place the source names, not the only place the word is used. Words from the English-language record, or with no single place, are not drawn. They are on the timeline and listed here.</li><li>Twenty-one words, from Yanomami, Inuktitut, Fijian, Filipino, Somali, Kiswahili, South African, Tuvaluan, Gilbertese and Bangla sources, are <b>existing expressions in their own languages</b>, not new climate words. They are drawn where the sources place them, and have no year.</li></ul><p class="lab" style="margin-top:16px">Words with no single place ('+free.length+')</p><div class="wl">'+free.map(wLine).join('')+'</div></div>';
+  return '<div class="intro wcard"><h2 style="margin-top:0">How to read it</h2><ul><li>Each dot is a place where a word was <b>introduced, first documented or made prominent</b>. A number inside a dot means several words. Tap a dot to read them. The maps are grouped by the year each word was recorded, and each word is listed with its year. In one-map view, a slider adds the words over time.</li><li>The year is the one the source gives. Its label says what it records, and several are <b>not</b> the first use or the coinage.</li><li>A dot is the place the source names, not the only place the word is used. Words from the English-language record, or with no single place, are not drawn. They are on the timeline and listed here.</li><li>Twenty-one words, from Yanomami, Inuktitut, Fijian, Filipino, Somali, Kiswahili, South African, Tuvaluan, Gilbertese and Bangla sources, are <b>existing expressions in their own languages</b>, not new climate words. They are drawn where the sources place them, and have no year.</li></ul><p class="lab" style="margin-top:16px">Words with no single place ('+free.length+')</p><div class="wl">'+free.map(wLine).join('')+'</div></div>';
 }
 function wordCard(w){
   return '<div class="wcard"><button type="button" data-act="clear">← All words</button><h2>'+esc(w.term)+'</h2>'+(w.script?'<p class="wm">'+esc(w.script)+'</p>':'')
@@ -1118,6 +1121,23 @@ function buildWordLists(){
   $('#tlnd').innerHTML=WORDS.filter(w=>w.year==null).map(wLine).join('');
   $('#wbody').innerHTML=WORDS.slice().sort((a,b)=>(a.year==null?9999:a.year)-(b.year==null?9999:b.year)||a.term.localeCompare(b.term)).map(w=>'<tr><td>'+esc(w.term)+(w.script?' · '+esc(w.script):'')+'</td><td>'+(w.year!=null?w.year:'not established')+'</td><td>'+esc(w.type)+'</td><td>'+esc(w.ctx||'no single place in the record')+'</td><td>'+esc(w.meaning)+'</td><td>'+(w.src?'<a href="'+esc(w.src)+'" target="_blank" rel="noopener">source</a>':'')+'</td></tr>').join('');
 }
+const WPER=[
+  {id:'a',name:'Before 2000',t:w=>w.year!=null&&w.year<2000},
+  {id:'b',name:'2000 to 2009',t:w=>w.year!=null&&w.year>=2000&&w.year<2010},
+  {id:'c',name:'2010 to 2019',t:w=>w.year!=null&&w.year>=2010&&w.year<2020},
+  {id:'d',name:'Year not established',t:w=>w.year==null}
+];
+function buildWGrid(){
+  const box=$('#wgrid');
+  WPER.forEach((m,i)=>{
+    const ws=WORDS.filter(m.t).sort((a,b)=>(a.year==null?9999:a.year)-(b.year==null?9999:b.year)||a.term.localeCompare(b.term));
+    const drawn=ws.filter(w=>w.places.length).length;
+    const el=document.createElement('figure');el.className='mini';el.style.setProperty('--c',INK);el.style.setProperty('--t',mixHex(INK,PAPERBG,.55));
+    el.innerHTML='<figcaption class="cap"><i class="sw"></i><span class="no2">'+String(i+1).padStart(2,'0')+'</span><span class="nm">'+esc(m.name)+'</span><span class="mv n">'+ws.length+(ws.length===1?' word':' words')+'</span></figcaption><div class="ms"><canvas tabindex="0" role="img" aria-label="'+esc('Dot globe with the words from '+m.name.toLowerCase()+': '+drawn+' of '+ws.length+' have a place on the globe. The same words are listed under the map. Arrow keys turn the globes.')+'"></canvas><div class="tip" hidden></div></div><div class="wl">'+ws.map(wLine).join('')+'</div>';
+    const ms=el.querySelector('.ms'),c=el.querySelector('canvas'),g={cv:c,ctx:c.getContext('2d'),stage:ms,tip:el.querySelector('.tip'),hits:[],feel:null,ws:m.t,visible:true,W:0,H:0,dpr:1,R:0,cx:0,cy:0,box:el};
+    box.append(el);WMINIS.push(g);resizeG(g);bind(g);watch(g);
+  });
+}
 function stopPlay(){if(wPlay){clearInterval(wPlay);wPlay=null}$('#tlplay').setAttribute('aria-pressed','false');$('#tlplay').textContent='Play'}
 $('#tlr').max=WYEARS.length-1;$('#tlr').value=wIdx;
 $('#tlr').addEventListener('input',e=>{stopPlay();wIdx=+e.target.value;if(state.sel&&state.sel.type==='word'&&!wShown(WBY[state.sel.id]))state.sel=null;renderPanel();dirty=true});
@@ -1144,7 +1164,7 @@ function setMode(m){
   if(m==='words')buildTimeline();
   if(m==='story'||m==='wstory')startStory();
   target={lon:m==='words'||m==='wstory'?10:view.lon,lat:20,z:1};
-  renderPanel();dirty=true;
+  renderPanel();syncWG();dirty=true;
 }
 const MAIN_ARIA=MAIN.cv.getAttribute('aria-label');
 document.querySelectorAll('.seg.mode').forEach(g=>g.addEventListener('click',e=>{const b=e.target.closest('button[data-mode]');if(b)setMode(b.dataset.mode)}));
@@ -1169,7 +1189,7 @@ function storyHTML(){
   });
   const nPl=new Set(D.auras.map(x=>x.place)).size;
   h+='<section class="sstep" data-i="'+(STORY.length+1)+'"><div class="sin"><p class="lab">Where nobody has asked</p><h2>An empty place is not a calm place</h2><p>Here are only the places with no figure at all. The surveys behind this map give figures for '+nPl+' places. The dark dots are the land where nobody has published a comparable number.</p><p>No data does not mean people there feel nothing. It means the question was never asked, or the answer is not public. Many of these places are among the most exposed to climate change, so the silence on the map says something about who gets asked, and who does not.</p><p class="wm">Turn the globe to see how much of it is dark. Use the button under the globe to bring back the countries that have data.</p></div></section>';
-  h+='<section class="sstep" data-i="'+(STORY.length+2)+'"><div class="sin"><p class="lab">All together</p><h2>Every feeling, on one globe</h2><p>Each country now carries, from left to right, the colours of the feelings its surveys asked about. Explore it freely.</p><p class="wm">Drag the globe and hover a country to read it.</p><p><button type="button" class="tg" data-go="feel">Open the grid view</button> <button type="button" class="tg" data-go="words">See where the words come from</button></p></div></section></div>';
+  h+='<section class="sstep" data-i="'+(STORY.length+2)+'"><div class="sin"><p class="lab">All together</p><h2>Every feeling, on one globe</h2><p>Each country now carries, from left to right, the colours of the feelings its surveys asked about. Explore it freely.</p><p class="wm">Drag the globe and hover a country to read it.</p><p><button type="button" class="tg" data-go="feel">Open the feelings grid</button> <button type="button" class="tg" data-go="words">See where the words come from</button></p></div></section></div>';
   return h;
 }
 let sStep=0,sTog=new Set();
@@ -1262,6 +1282,13 @@ function startWStory(){
   sObs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){const st=e.target.parentElement;detail.querySelectorAll('.sstep').forEach(x=>x.classList.toggle('on',x===st));setWStep(+st.dataset.i)}})},{rootMargin:innerWidth<961?'-72% 0px -14% 0px':'-42% 0px -42% 0px',threshold:0});
   detail.querySelectorAll('.sin').forEach(s=>sObs.observe(s));
 }
+function syncWG(){
+  const wg=state.mode==='words'&&state.wgrid;
+  $('#wgrid').hidden=!wg;$('.sheet').classList.toggle('wg',wg);
+  $('#onemap').hidden=state.multi||wg;
+  if(state.mode==='words')$('#viewseg').querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String((b.dataset.m==='multi')===state.wgrid)));
+  dirty=true;
+}
 function setMulti(on){
   state.multi=on;hov=null;
   $('.sheet').classList.toggle('multi',on);
@@ -1269,11 +1296,11 @@ function setMulti(on){
   $('#viewseg').querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String((b.dataset.m==='multi')===on)));
   placesEl.querySelectorAll('button').forEach(b=>{b.hidden=!on&&!NC.has(b.dataset.id)});
   if(!on&&state.sel&&state.sel.type==='place'&&!NC.has(state.sel.place))state.sel=null;
-  renderKey();refreshMinis();renderPanel();syncPlaces();dirty=true;
+  renderKey();refreshMinis();renderPanel();syncPlaces();syncWG();dirty=true;
 }
-$('#viewseg').addEventListener('click',e=>{const b=e.target.closest('button[data-m]');if(b)setMulti(b.dataset.m==='multi')});
+$('#viewseg').addEventListener('click',e=>{const b=e.target.closest('button[data-m]');if(!b)return;if(state.mode==='words'){state.wgrid=b.dataset.m==='multi';syncWG();renderPanel()}else setMulti(b.dataset.m==='multi')});
 resizeG(MAIN);bind(MAIN);watch(MAIN);
-buildMinis();setMulti(true);setMode("story");
+buildMinis();buildWGrid();setMulti(true);setMode("story");
 /*DBG*/
 if(document.fonts&&document.fonts.load)Promise.all([document.fonts.load('500 12px "JetBrains Mono"'),document.fonts.load('600 10px "JetBrains Mono"')]).then(()=>{dirty=true}).catch(()=>{});
 requestAnimationFrame(frame);

@@ -1162,7 +1162,9 @@ function storyHTML(){
       +(b?'<p class="sbig" style="color:'+fe.color+'">'+pct(b.l.v)+(b.l.prov?'<small> provisional</small>':'')+'</p><p>'+esc(b.l.ind)+'</p><p class="wm">The largest share in the data: '+esc(b.a.who||POPN[b.a.pop])+(b.a.pooled&&b.a.n?', '+esc(b.a.n):' · '+esc(PL[b.a.place].name))+'.</p>':'')
       +'<p>'+esc(fe.gloss.charAt(0).toUpperCase()+fe.gloss.slice(1))+'.</p><p class="wm">A figure exists for '+ft.places+(ft.places===1?' place':' places')+'. Compare percentages only within one survey.</p></div></section>';
   });
-  h+='<section class="sstep" data-i="'+(STORY.length+1)+'"><div class="sin"><p class="lab">All together</p><h2>Every feeling, on one globe</h2><p>Each country now carries, from left to right, the colours of the feelings its surveys asked about. The grey dots are the places where nobody has asked yet, and an empty place is not a calm place.</p><p class="wm">Drag the globe and hover a country to read it.</p><p><button type="button" class="tg" data-go="feel">Explore the feelings map</button> <button type="button" class="tg" data-go="words">See where the words come from</button></p></div></section></div>';
+  const nPl=new Set(D.auras.map(x=>x.place)).size;
+  h+='<section class="sstep" data-i="'+(STORY.length+1)+'"><div class="sin"><p class="lab">Where nobody has asked</p><h2>An empty place is not a calm place</h2><p>Every feeling is now on the globe, and most of it is still grey. The surveys behind this map give figures for '+nPl+' places. For the rest of the world\'s countries, nobody has published a comparable number.</p><p>Grey does not mean people there feel nothing. It means the question was never asked, or the answer is not public. Many of these places are among the most exposed to climate change, so the silence on the map says something about who gets asked, and who does not.</p><p class="wm">Turn the globe by hand to look for the grey.</p></div></section>';
+  h+='<section class="sstep" data-i="'+(STORY.length+2)+'"><div class="sin"><p class="lab">All together</p><h2>Every feeling, on one globe</h2><p>Each country now carries, from left to right, the colours of the feelings its surveys asked about. Explore it freely.</p><p class="wm">Drag the globe and hover a country to read it.</p><p><button type="button" class="tg" data-go="feel">Explore the feelings map</button> <button type="button" class="tg" data-go="words">See where the words come from</button></p></div></section></div>';
   return h;
 }
 let sStep=0,sTog=new Set();
@@ -1176,6 +1178,7 @@ function applyStory(){
   if(!(want.size===state.feels.size&&[...want].every(x=>state.feels.has(x)))){state.feels=want;dirty=true}
   const c=$('#sctl');if(!c)return;
   c.querySelectorAll('.chip').forEach(b=>b.setAttribute('aria-pressed',want.has(b.dataset.f)?'true':'false'));
+  const lb=c.querySelector('.lab');if(lb)lb.textContent=sStep>STORY.length?'All feelings shown. Tap a colour to hide it.':'Showing one feeling at a time. Tap a colour to add or hide it.';
 }
 function setStoryStep(i){if(i!==sStep){sStep=i;sTog=new Set()}applyStory()}
 function buildSctl(){

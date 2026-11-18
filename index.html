@@ -1142,14 +1142,14 @@ function feelFacts(f){
   return {best,places:new Set(as.map(a=>a.place)).size};
 }
 function storyHTML(){
-  let h='<div class="story"><section class="sstep" data-i="0"><p class="lab">Scroll</p><h2>One globe, many feelings</h2><p>Each step adds one feeling to the globe. A country fills with that feeling\'s colour by the share of people who report it, so a fuller country is a bigger share. Most of the world stays grey, because nobody has asked there.</p></section>';
+  let h='<div class="story"><section class="sstep" data-i="0"><div class="sin"><p class="lab">Scroll</p><h2>One globe, many feelings</h2><p>Each step adds one feeling to the globe. A country fills with that feeling\'s colour by the share of people who report it, so a fuller country is a bigger share. Most of the world stays grey, because nobody has asked there.</p></div></section>';
   STORY.forEach((f,i)=>{
     const fe=F[f],ft=feelFacts(f),b=ft.best;
-    h+='<section class="sstep" data-i="'+(i+1)+'"><p class="lab"><i class="fd" style="background:'+fe.color+'"></i>'+(i+1)+' of '+STORY.length+'</p><h2>'+esc(fe.name)+'</h2>'
+    h+='<section class="sstep" data-i="'+(i+1)+'"><div class="sin"><p class="lab"><i class="fd" style="background:'+fe.color+'"></i>'+(i+1)+' of '+STORY.length+'</p><h2>'+esc(fe.name)+'</h2>'
       +(b?'<p class="sbig" style="color:'+fe.color+'">'+pct(b.l.v)+(b.l.prov?'<small> provisional</small>':'')+'</p><p>'+esc(b.l.ind)+'</p><p class="wm">The largest share in the data: '+esc(b.a.who||POPN[b.a.pop])+(b.a.pooled&&b.a.n?', '+esc(b.a.n):' · '+esc(PL[b.a.place].name))+'.</p>':'')
-      +'<p>'+esc(fe.gloss.charAt(0).toUpperCase()+fe.gloss.slice(1))+'.</p><p class="wm">A figure exists for '+ft.places+(ft.places===1?' place':' places')+'. Compare percentages only within one survey.</p></section>';
+      +'<p>'+esc(fe.gloss.charAt(0).toUpperCase()+fe.gloss.slice(1))+'.</p><p class="wm">A figure exists for '+ft.places+(ft.places===1?' place':' places')+'. Compare percentages only within one survey.</p></div></section>';
   });
-  h+='<section class="sstep" data-i="'+(STORY.length+1)+'"><p class="lab">All together</p><h2>Every feeling, on one globe</h2><p>Each country now carries the nested colours of the feelings its surveys asked about. The grey dots are the places where nobody has asked yet, and an empty place is not a calm place.</p><p class="wm">Drag the globe and hover a country to read it.</p><p><button type="button" class="tg" data-go="feel">Explore the feelings map</button> <button type="button" class="tg" data-go="words">See where the words come from</button></p></section></div>';
+  h+='<section class="sstep" data-i="'+(STORY.length+1)+'"><div class="sin"><p class="lab">All together</p><h2>Every feeling, on one globe</h2><p>Each country now carries the nested colours of the feelings its surveys asked about. The grey dots are the places where nobody has asked yet, and an empty place is not a calm place.</p><p class="wm">Drag the globe and hover a country to read it.</p><p><button type="button" class="tg" data-go="feel">Explore the feelings map</button> <button type="button" class="tg" data-go="words">See where the words come from</button></p></div></section></div>';
   return h;
 }
 function setStoryStep(i){
@@ -1163,8 +1163,8 @@ function startStory(){
   state.feels=new Set();state.events=false;
   detail.innerHTML=storyHTML();
   if(sObs)sObs.disconnect();
-  sObs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){detail.querySelectorAll('.sstep').forEach(s=>s.classList.toggle('on',s===e.target));setStoryStep(+e.target.dataset.i)}})},{rootMargin:innerWidth<961?'-66% 0px -22% 0px':'-42% 0px -42% 0px',threshold:0});
-  detail.querySelectorAll('.sstep').forEach(s=>sObs.observe(s));
+  sObs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){const st=e.target.parentElement;detail.querySelectorAll('.sstep').forEach(x=>x.classList.toggle('on',x===st));setStoryStep(+st.dataset.i)}})},{rootMargin:innerWidth<961?'-72% 0px -14% 0px':'-42% 0px -42% 0px',threshold:0});
+  detail.querySelectorAll('.sin').forEach(s=>sObs.observe(s));
 }
 function endStory(){
   if(sObs){sObs.disconnect();sObs=null}

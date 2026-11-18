@@ -156,7 +156,12 @@ ul.lim2{padding-left:18px;margin:0}ul.lim2 li{margin:0 0 9px;font-size:14.5px}
 .sbig{font-size:clamp(56px,8vw,92px);line-height:1;letter-spacing:-.03em;margin:.1em 0 .05em!important}
 .sbig small{font-size:13px;letter-spacing:.08em;text-transform:uppercase;margin-left:8px;color:var(--mut)}
 .sstep .fd{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:7px;vertical-align:-1px}
-@media(max-width:960px){.sheet.story .r-mid{display:block}.sheet.story .c-stage{position:sticky;top:0;z-index:5;background:var(--bg)}.sheet.story .c-stage .stage{height:42vh;min-height:260px}.sheet.story .sstep{min-height:64vh}}
+@media(max-width:960px){.sheet.story .r-mid,.sheet.wstory .r-mid{display:block}.sheet.story .c-stage,.sheet.wstory .c-stage{position:sticky;top:0;z-index:5;background:var(--bg)}.sheet.story .c-stage .stage,.sheet.wstory .c-stage .stage{height:42vh;min-height:260px}.sheet.story .sstep,.sheet.wstory .sstep{min-height:64vh}}
+.wts{display:flex;flex-wrap:wrap;gap:6px}
+.wt{display:inline-block;border:1px solid var(--ink);padding:3px 9px;font-size:13px;color:var(--ink)}
+.wt.s{border-color:var(--warm);color:var(--warm)}
+.wt i{font-style:normal;opacity:.7;margin-left:5px}
+.sheet.wstory .c-time{display:none!important}
 .c-time{display:none;padding:clamp(12px,2vw,18px)}
 .sheet.words .c-time{display:block}
 .vbar .seg.mode{margin-right:2px}
@@ -207,7 +212,7 @@ ul.lim2{padding-left:18px;margin:0}ul.lim2 li{margin:0 0 9px;font-size:14.5px}
     <section class="c-stage" aria-label="Globes">
       <div class="vbar">
         <span class="lab">Show</span>
-        <div class="seg mode" id="modeseg" role="group" aria-label="What the globe shows"><button type="button" data-mode="feel" aria-pressed="true">Feelings</button><button type="button" data-mode="words" aria-pressed="false">Words</button><button type="button" data-mode="story" aria-pressed="false">Story</button></div>
+        <div class="seg mode" id="modeseg" role="group" aria-label="What the globe shows"><button type="button" data-mode="feel" aria-pressed="true">Feelings</button><button type="button" data-mode="words" aria-pressed="false">Words</button><button type="button" data-mode="story" aria-pressed="false">Feelings story</button><button type="button" data-mode="wstory" aria-pressed="false">Words story</button></div>
         <div class="seg" id="viewseg" role="group" aria-label="View"><button type="button" data-m="multi" aria-pressed="true">Separate maps</button><button type="button" data-m="one" aria-pressed="false">One map</button></div>
         <div class="mz"><button type="button" id="mzin" aria-label="Zoom in">+</button><button type="button" id="mzout" aria-label="Zoom out">−</button><button type="button" id="mrst" class="t" aria-label="Reset view">Reset</button></div>
         <p class="vhint" id="vhint"></p>
@@ -460,7 +465,7 @@ function draw(){
   const dr=Math.max(.6,Rz*.0032),al=[.24,.42,.64,.88];
   for(let b=0;b<4;b++){ctx.fillStyle='rgba(128,128,128,'+al[b]+')';ctx.beginPath();const rr=dr*(.62+.12*b),sq=rr<1.3/dpr;for(let i=0;i<DV.length;i++)if(sb[i]===b){if(sq)ctx.rect(sx[i]-rr,sy[i]-rr,2*rr,2*rr);else{ctx.moveTo(sx[i]+rr,sy[i]);ctx.arc(sx[i],sy[i],rr,0,7)}}ctx.fill()}
   hits.length=0;
-  if(state.mode==='words'&&!curFeel){drawWords();return}
+  if((state.mode==='words'||state.mode==='wstory')&&!curFeel){drawWords();return}
   const selPlace=state.sel&&state.sel.type==='place'?state.sel.place:null;
   const vis=[];
   const RANK={youth:0,students:1,adults:2},actv=b=>!EVO&&b.layers.some(lon);
@@ -766,7 +771,7 @@ function bind(g){
     useGlobe(g);
     const was=drag;drag=null;
     if(was&&!was.moved){
-      if(state.mode==='story')return;
+      if(state.mode==='story'||state.mode==='wstory')return;
       stopSpin();const h=hitAt(xy(e));
       if(!h){state.sel=null;renderPanel();syncPlaces();dirty=true;return}
       if(h.kind==='word')selectWordPlace(h.pid);else if(h.kind==='aura')selectPlace(h.a.place,h.a.id);else if(h.kind==='gap')selectPlace(h.g.place);else selectEvent(h.e);
@@ -917,7 +922,7 @@ function eventHTML(e){
 }
 function renderPanel(){
   const s=state.sel;
-  if(state.mode==='story'){if(!detail.querySelector('.sstep'))startStory();updateCaps();return}
+  if(state.mode==='story'||state.mode==='wstory'){if(!detail.querySelector('.sstep'))startStory();updateCaps();return}
   detail.innerHTML=state.mode==='words'?wordsPanel():!s?introHTML():s.type==='event'?eventHTML(s.e):placeHTML(s.place,s.aura);
   updateCaps();tlSync();
 }
@@ -997,7 +1002,8 @@ const WORDS=D.words,WBY={};WORDS.forEach(w=>WBY[w.id]=w);
 const WYEARS=[...new Set(WORDS.filter(w=>w.year!=null).map(w=>w.year))].sort((a,b)=>a-b);
 let wIdx=WYEARS.length-1,wPlay=null,prevMulti=true;
 const wYear=()=>WYEARS[wIdx];
-const wShown=w=>w.year==null||w.year<=wYear();
+let wFilter=null;
+const wShown=w=>wFilter?wFilter.has(w.id):(w.year==null||w.year<=wYear());
 const WARM='#c2410c';
 const WF='500 12.5px "Inter Tight","Helvetica Neue",Arial,sans-serif',WF2='400 11px "Inter Tight","Helvetica Neue",Arial,sans-serif',WF3='600 10px "Inter Tight","Helvetica Neue",Arial,sans-serif';
 function drawWords(){
@@ -1114,18 +1120,18 @@ $('#tlplay').addEventListener('click',()=>{
 function setMode(m){
   if(m===state.mode)return;
   const from=state.mode;
-  if(from==='story')endStory();
+  if(from==='story'||from==='wstory')endStory();
   state.mode=m;state.sel=null;stopPlay();
-  const sh=$('.sheet');sh.classList.toggle('words',m==='words');sh.classList.toggle('story',m==='story');
+  const sh=$('.sheet');sh.classList.toggle('words',m==='words'||m==='wstory');sh.classList.toggle('story',m==='story');sh.classList.toggle('wstory',m==='wstory');
   $('#modeseg').querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.mode===m)));
   if(from==='feel'&&m!=='feel'){prevMulti=state.multi;setMulti(false)}
   if(m==='feel')setMulti(prevMulti);
-  const ARIA={words:'Dot globe with a dot for each place where a climate word was introduced or first documented. Use the timeline and the list view of the words for the same content as text.',story:'Dot globe that gains one feeling at each step of the story. Read the steps beside it.'};
+  const ARIA={words:'Dot globe with a dot for each place where a climate word was introduced or first documented. Use the timeline and the list view of the words for the same content as text.',story:'Dot globe that gains one feeling at each step of the story. Read the steps beside it.',wstory:'Dot globe that gains a group of words at each step of the story. Read the steps beside it.'};
   MAIN.cv.setAttribute('aria-label',ARIA[m]||MAIN_ARIA);
-  $('#hint').textContent=m==='words'?'Drag to turn the globe · click a dot':m==='story'?'Scroll to add the next feeling':'Drag to turn the globe · click a country';
+  $('#hint').textContent=m==='words'?'Drag to turn the globe · click a dot':m==='story'?'Scroll to add the next feeling':m==='wstory'?'Scroll to add the next words':'Drag to turn the globe · click a country';
   if(m==='words')buildTimeline();
-  if(m==='story')startStory();
-  target={lon:m==='words'?10:view.lon,lat:20,z:1};
+  if(m==='story'||m==='wstory')startStory();
+  target={lon:m==='words'||m==='wstory'?10:view.lon,lat:20,z:1};
   renderPanel();dirty=true;
 }
 const MAIN_ARIA=MAIN.cv.getAttribute('aria-label');
@@ -1159,6 +1165,7 @@ function setStoryStep(i){
   state.feels=want;dirty=true;
 }
 function startStory(){
+  if(state.mode==='wstory'){startWStory();return}
   sSaved={feels:new Set(state.feels),events:state.events};
   state.feels=new Set();state.events=false;
   detail.innerHTML=storyHTML();
@@ -1169,8 +1176,57 @@ function startStory(){
 function endStory(){
   if(sObs){sObs.disconnect();sObs=null}
   if(sSaved){state.feels=sSaved.feels;state.events=sSaved.events;sSaved=null}
+  if(wSaved){wFilter=null;wSaved=null}
 }
-document.addEventListener('click',e=>{const b=e.target.closest('[data-go]');if(b&&state.mode==='story'){setMode(b.dataset.go);$('.c-stage').scrollIntoView({behavior:reduce?'auto':'smooth',block:'start'})}});
+document.addEventListener('click',e=>{const b=e.target.closest('[data-go]');if(b&&(state.mode==='story'||state.mode==='wstory')){setMode(b.dataset.go);$('.c-stage').scrollIntoView({behavior:reduce?'auto':'smooth',block:'start'})}});
+/* ---------- words story: words are added to the globe era by era, then by kind ---------- */
+let wSaved=null,wSteps=null;
+function wStorySteps(){
+  const by=(a,b)=>WORDS.filter(w=>w.year!=null&&w.year>=a&&w.year<=b);
+  const T=n=>WORDS.filter(w=>n.includes(w.term));
+  const A=T(['xawara','urihi a','uggianaqtuq','vanua','fenua','te aba']);
+  const Bset=WORDS.filter(w=>w.existing&&!A.includes(w));
+  const C=WORDS.filter(w=>!w.existing&&w.year==null);
+  return [
+    {lab:'Before 1990',h:'The first dated words',ws:by(0,1989),p:'The earliest dated words in the data. Only some have a place of their own.'},
+    {lab:'The 1990s',h:'Grief and anxiety get names',ws:by(1990,1999),p:'Words for feeling something about the environment start to appear in the record.'},
+    {lab:'The 2000s',h:'From place to campaign',ws:by(2000,2009),p:'Some words come from a researcher, some from a government campaign, and some only became prominent in these years.'},
+    {lab:'The 2010s',h:'The words multiply',ws:by(2010,2019),p:'More words appear in this decade than in any other in the data, in several languages.'},
+    {lab:'No year',h:'Terms without a date',ws:C,p:'These terms are in the vocabulary data without a year of origin.'},
+    {lab:'Already there',h:'Land, belonging and unfamiliar weather',ws:A,p:'These are not new climate words. They are existing words in Yanomami, Inuktitut, Fijian, Tuvaluan and Gilbertese contexts, and each rests on one source.'},
+    {lab:'Already there',h:'Names for drought, floods and storms',ws:Bset,p:'Everyday hazard words in Somali, Kiswahili, South African languages, Bangla and Filipino. Each names a hazard, and none is a translation of climate anxiety.'}
+  ];
+}
+function wstoryHTML(){
+  wSteps=wStorySteps();
+  const chip=w=>'<span class="wt'+(w.south?' s':'')+'">'+esc(w.term)+(w.year!=null?'<i>'+w.year+'</i>':'')+'</span>';
+  let h='<div class="story"><section class="sstep" data-i="0"><div class="sin"><p class="lab">Scroll</p><h2>One globe, many words</h2><p>Each step adds a group of words to the globe, at the place where the source says each one comes from. Orange marks low- and middle-income countries, blue high-income ones. Some words have no single place, and are named here but not drawn.</p></div></section>';
+  wSteps.forEach((st,i)=>{
+    const placed=st.ws.filter(w=>w.places.length).length,free=st.ws.length-placed;
+    h+='<section class="sstep" data-i="'+(i+1)+'"><div class="sin"><p class="lab">'+esc(st.lab)+' · '+(i+1)+' of '+wSteps.length+'</p><h2>'+esc(st.h)+'</h2><p>'+esc(st.p)+'</p><p class="wts">'+st.ws.map(chip).join('')+'</p><p class="wm">'+placed+(placed===1?' word is':' words are')+' drawn on the globe'+(free?'; '+free+(free===1?' has':' have')+' no single place, so '+(free===1?'it is':'they are')+' only listed':'')+'.</p></div></section>';
+  });
+  h+='<section class="sstep" data-i="'+(wSteps.length+1)+'"><div class="sin"><p class="lab">All together</p><h2>Every word, on one globe</h2><p>'+WORDS.length+' words, '+WORDS.filter(w=>w.places.length).length+' of them with a place. Drag the globe and hover a dot to read the words. A dot is the place a source names, not the only place a word is used.</p><p><button type="button" class="tg" data-go="words">Explore the words and the timeline</button> <button type="button" class="tg" data-go="feel">See the feelings map</button></p></div></section></div>';
+  return h;
+}
+function setWStep(i){
+  const ids=new Set();
+  for(let k=0;k<Math.min(i,wSteps.length);k++)wSteps[k].ws.forEach(w=>ids.add(w.id));
+  if(i>wSteps.length)WORDS.forEach(w=>ids.add(w.id));
+  const fresh=[];ids.forEach(id=>{if(!wFilter||!wFilter.has(id))fresh.push(WBY[id])});
+  wFilter=ids;dirty=true;
+  // turn the globe to the place where most of the new words sit
+  const cnt={};fresh.forEach(w=>w.places.forEach(p=>{(cnt[p.id]=cnt[p.id]||{p,n:0}).n++}));
+  const top=Object.values(cnt).sort((x,y)=>y.n-x.n)[0];
+  if(top&&i<=wSteps.length)fly(top.p.lat,top.p.lon,1.25);
+  if(i>wSteps.length){state.spin=true;$('#spin').setAttribute('aria-pressed','true');target={lon:view.lon,lat:20,z:1}}   // at the end the globe turns by itself, so every dot comes round
+}
+function startWStory(){
+  wSaved=true;wFilter=new Set();
+  detail.innerHTML=wstoryHTML();
+  if(sObs)sObs.disconnect();
+  sObs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){const st=e.target.parentElement;detail.querySelectorAll('.sstep').forEach(x=>x.classList.toggle('on',x===st));setWStep(+st.dataset.i)}})},{rootMargin:innerWidth<961?'-72% 0px -14% 0px':'-42% 0px -42% 0px',threshold:0});
+  detail.querySelectorAll('.sin').forEach(s=>sObs.observe(s));
+}
 function setMulti(on){
   state.multi=on;hov=null;
   $('.sheet').classList.toggle('multi',on);

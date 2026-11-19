@@ -95,7 +95,7 @@ button[aria-pressed=true].tg,.seg button[aria-pressed=true]{background:var(--ink
 .tile:hover{background:none}
 .tile .sw{display:block;width:100%;aspect-ratio:1/.74;background:radial-gradient(circle at 50% 50%,var(--c) 0,var(--c) 22%,var(--t) 100%);transition:opacity .25s}
 .tile .nm{display:block;font-size:12px;letter-spacing:.1em;text-transform:uppercase;font-weight:500;margin-top:8px;line-height:1.25}
-#minis .c-feel{grid-column:span 1;box-shadow:0 0 0 .5px var(--ink);background:var(--bg)}@container cs (min-width:700px){#minis .c-feel{grid-column:span 2}}
+#minis .c-places{grid-column:span 1;box-shadow:0 0 0 .5px var(--ink);background:var(--bg)}@container cs (min-width:700px){#minis .c-places{grid-column:span 2}}
 .tile .gl{display:block;font-size:12.5px;color:var(--mut);margin-top:3px;line-height:1.3}
 .tile[aria-pressed=false] .sw{opacity:.16}
 .tile[aria-pressed=false] .nm{text-decoration:line-through;text-decoration-thickness:1px;color:var(--mut)}
@@ -154,7 +154,7 @@ ul.lim2{padding-left:18px;margin:0}ul.lim2 li{margin:0 0 9px;font-size:14.5px}
 }
 @media(max-width:560px){.key{grid-template-columns:minmax(0,1fr)}.zoom button{width:34px;height:34px}.zoom button.t{font-size:10px}}
 /* words view: toggle, timeline, panel */
-.sheet.words .c-feel,.sheet.words .r-ctl,.sheet.words .c-key,.sheet.words .det,.sheet.words .vlab-v{display:none}
+.sheet.words .c-places,.sheet.story .c-places,.sheet.words .c-feel,.sheet.words .r-ctl,.sheet.words .c-key,.sheet.words .det,.sheet.words .vlab-v{display:none}
 @media(min-width:961px){.sheet.story .c-stage .stage{height:clamp(300px,calc(100vh - 250px),600px)}.sheet.story .c-stage{position:sticky;top:12px;align-self:flex-start}.sheet.story .c-stage .stage{position:relative;top:auto}}
 .sctl details{margin-top:8px}.sctl summary{cursor:pointer;font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink)}.sctl .snames{border-top:1px solid var(--line);padding-top:8px}.sctl .snm{margin-top:8px}.sctl details .chips{margin-top:8px;max-height:96px;overflow:auto}
 .sctl{padding:8px 4px 4px}
@@ -1370,7 +1370,7 @@ function setMulti(on){
 }
 
 resizeG(MAIN);bind(MAIN);watch(MAIN);
-buildMinis();$('#minis').insertBefore($('.c-feel'),$('#minis .mini.lg'));buildWGrid();setMulti(true);setMode("story");
+buildMinis();$('#minis').insertBefore($('.c-places'),$('#minis .mini.lg'));$('.r-ctl').insertBefore($('.c-feel'),$('.r-ctl').firstChild);buildWGrid();setMulti(true);setMode("story");
 /*DBG*/
 if(document.fonts&&document.fonts.load)Promise.all([document.fonts.load('500 12px "JetBrains Mono"'),document.fonts.load('600 10px "JetBrains Mono"')]).then(()=>{dirty=true}).catch(()=>{});
 requestAnimationFrame(frame);

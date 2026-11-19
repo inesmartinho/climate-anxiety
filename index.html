@@ -258,10 +258,8 @@ ul.lim2{padding-left:18px;margin:0}ul.lim2 li{margin:0 0 9px;font-size:14.5px}
 
   <div class="rw r-ctl">
     <div class="cell c-places">
-      <p class="lab">Go to · places with survey data</p>
+      <p class="lab">Go to</p>
       <div class="places" id="places"></div>
-      <p class="lab" style="margin-top:16px" id="evlab">Go to · climate disruption and conflict-risk cases</p>
-      <div class="places" id="evplaces"></div>
     </div>
     <div class="cell ctl-col">
       <div class="c-who" hidden>
@@ -862,20 +860,21 @@ function setSplit(k){
   if(k==='all')selectPlace('US');else{state.sel={type:'place',place:'US',aura:null};fly(40,-90,2.3);renderPanel();syncPlaces()}
   dirty=true;showMaps();
 }
-const placesEl=$('#places'),evEl=$('#evplaces');
+const placesEl=$('#places'),evEl=placesEl;
 Object.entries(PL).sort((a,b)=>a[1].name.localeCompare(b[1].name)).forEach(([id,p])=>{
   const b=document.createElement('button');b.type='button';b.className='pl';b.dataset.id=id;b.setAttribute('aria-pressed','false');b.textContent=p.name;b.onclick=()=>{if(state.sel&&state.sel.type==='place'&&state.sel.place===id){state.sel=null;hidePick();renderPanel();syncPlaces();dirty=true;return}selectPlace(id);showMaps()};placesEl.append(b);
 });
 D.events.forEach(e=>{
   const b=document.createElement('button');b.type='button';b.className='pl ev';b.dataset.ev=e.id;b.setAttribute('aria-pressed','false');b.textContent=e.label;b.onclick=()=>{if(state.sel&&state.sel.type==='event'&&state.sel.e.id===e.id){state.sel=null;hidePick();renderPanel();syncPlaces();dirty=true;return}selectEvent(e);showMaps()};evEl.append(b);
 });
+[...placesEl.children].sort((a,b)=>a.textContent.localeCompare(b.textContent)).forEach(b=>placesEl.append(b));
 const NC=new Set();D.auras.forEach(a=>{NC.add(a.place)});D.gaps.forEach(g=>NC.add(g.place));
 function syncPlaces(){
-  placesEl.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(!!(state.sel&&state.sel.type==='place'&&state.sel.place===b.dataset.id))));
-  evEl.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(!!(state.sel&&state.sel.type==='event'&&state.sel.e.id===b.dataset.ev))));
+  placesEl.querySelectorAll('button[data-id]').forEach(b=>b.setAttribute('aria-pressed',String(!!(state.sel&&state.sel.type==='place'&&state.sel.place===b.dataset.id))));
+  evEl.querySelectorAll('button[data-ev]').forEach(b=>b.setAttribute('aria-pressed',String(!!(state.sel&&state.sel.type==='event'&&state.sel.e.id===b.dataset.ev))));
 }
 $('#spin').onclick=()=>{state.spin=!state.spin;spinOff=!state.spin;$('#spin').setAttribute('aria-pressed',String(state.spin));if(state.spin){target=null;$('#hint').style.opacity=0}dirty=true};
-$('#evt').onclick=()=>{state.events=!state.events;$('#evt').setAttribute('aria-pressed',String(state.events));$('#evplaces').hidden=$('#evlab').hidden=!state.events;if(!state.events&&state.sel&&state.sel.type==='event')state.sel=null;refreshMinis();renderPanel();syncPlaces();dirty=true};
+$('#evt').onclick=()=>{state.events=!state.events;$('#evt').setAttribute('aria-pressed',String(state.events));if(!state.events&&state.sel&&state.sel.type==='event')state.sel=null;refreshMinis();renderPanel();syncPlaces();dirty=true};
 function shapePath(key,box,s){
   const sh=SH[key],k=Math.cos(sh.c[1]*rad);let x0=1e9,x1=-1e9,y0=1e9,y1=-1e9;
   sh.parts.forEach(pt=>{for(let i=0;i<pt.p.length;i+=2){const X=pt.p[i]*k,Y=pt.p[i+1];if(X<x0)x0=X;if(X>x1)x1=X;if(Y<y0)y0=Y;if(Y>y1)y1=Y}});
@@ -1380,7 +1379,7 @@ function setMulti(on){
   state.multi=on;hov=null;
   $('.sheet').classList.toggle('multi',on);
   $('#onemap').hidden=on;$('#minis').hidden=!on;
-  placesEl.querySelectorAll('button').forEach(b=>{b.hidden=!on&&!NC.has(b.dataset.id)});
+  placesEl.querySelectorAll('button[data-id]').forEach(b=>{b.hidden=!on&&!NC.has(b.dataset.id)});
   if(!on&&state.sel&&state.sel.type==='place'&&!NC.has(state.sel.place))state.sel=null;
   renderKey();refreshMinis();renderPanel();syncPlaces();syncWG();dirty=true;
 }

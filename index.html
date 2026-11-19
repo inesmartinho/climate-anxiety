@@ -1261,7 +1261,7 @@ function storyHTML(){
   });
   const nPl=new Set(D.auras.map(x=>x.place)).size;
   h+='<section class="sstep" data-i="'+(STORY.length+1)+'"><div class="sin"><h2>An empty place is not a calm place</h2><p>Here are only the places with no figure at all.</p><p>No data does not mean people there feel nothing. It means the question was never asked, or the answer is not public. Many of these places are among the most exposed to climate change, so the silence on the map says something about who gets asked, and who does not.</p><p class="wm">Turn the globe to see how much of it is dark. Use the button under the globe to bring back the countries that have data.</p></div></section>';
-  h+='<section class="sstep" data-i="'+(STORY.length+2)+'"><div class="sin"><p class="lab">All together</p><h2>All together</h2><p>Each country now carries, from left to right, the colours of the feelings its surveys asked about. Explore it freely.</p><p class="wm">Drag the globe and hover a country to read it.</p><p><button type="button" class="tg" data-go="feel">Open the feelings grid</button> <button type="button" class="tg" data-go="words">Open the word list</button></p></div></section></div>';
+  h+='<section class="sstep" data-i="'+(STORY.length+2)+'"><div class="sin"><h2>All together</h2><p>Each country now carries, from left to right, the colours of the feelings its surveys asked about. Explore it freely.</p><p class="wm">Drag the globe and hover a country to read it.</p><p><button type="button" class="tg" data-go="feel">Open the feelings grid</button> <button type="button" class="tg" data-go="words">Open the word list</button></p></div></section></div>';
   return h;
 }
 let sStep=0,sTog=new Set();

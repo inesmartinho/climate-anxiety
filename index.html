@@ -90,13 +90,13 @@ button[aria-pressed=true].tg,.seg button[aria-pressed=true]{background:var(--ink
 .pl.ev{border-style:dashed}
 /* the feeling squares along the top, like the colour swatches on the reference */
 .tiles-c{padding:clamp(12px,2vw,18px)}
-#chips.chips{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:clamp(8px,1.4vw,14px);align-items:start}
+#chips.chips{display:grid;grid-template-columns:repeat(auto-fit,minmax(92px,1fr));gap:10px;align-items:start}
 .tile{display:flex;flex-direction:column;justify-content:flex-start;align-items:stretch;text-align:left;border:0;padding:0;min-height:0;background:none;color:var(--ink)}
 .tile:hover{background:none}
-.tile .sw{display:block;width:100%;aspect-ratio:1/.74;background:radial-gradient(circle at 50% 50%,var(--c) 0,var(--c) 22%,var(--t) 100%);transition:opacity .25s}
-.tile .nm{display:block;font-size:12px;letter-spacing:.1em;text-transform:uppercase;font-weight:500;margin-top:8px;line-height:1.25}
+.tile .sw{display:block;width:100%;height:26px;background:radial-gradient(circle at 50% 50%,var(--c) 0,var(--c) 22%,var(--t) 100%);transition:opacity .25s}
+.tile .nm{display:block;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;font-weight:500;margin-top:6px;line-height:1.25}
 #minis .c-places{grid-column:span 1;box-shadow:0 0 0 .5px var(--ink);background:var(--bg)}@container cs (min-width:700px){#minis .c-places{grid-column:span 2}}
-.tile .gl{display:block;font-size:12.5px;color:var(--mut);margin-top:3px;line-height:1.3}
+.tile .gl{display:block;font-size:10.5px;color:var(--mut);margin-top:2px;line-height:1.3}
 .tile[aria-pressed=false] .sw{opacity:.16}
 .tile[aria-pressed=false] .nm{text-decoration:line-through;text-decoration-thickness:1px;color:var(--mut)}
 .ctl-col{display:flex;flex-direction:column;gap:22px}

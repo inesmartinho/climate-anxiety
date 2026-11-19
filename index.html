@@ -1252,7 +1252,7 @@ function feelFacts(f){
   return {best,places:new Set(as.map(a=>a.place)).size,top:rk[0],low:rk[rk.length-1],nrk:rk.length};
 }
 function storyHTML(){
-  let h='<div class="story"><section class="sstep" data-i="0"><div class="sin"><p class="lab">Scroll</p><h2>What do people feel about a changing world?</h2><p>Solastalgia is the grief of watching your home change. This map gathers what published surveys have asked different generations about climate change: whether they feel <b>worried, afraid of the future, anxious, powerless, distressed, or hesitant to have children.</b></p></div></section>';
+  let h='<div class="story"><section class="sstep" data-i="0"><div class="sin"><p class="lab">Scroll</p><h2>How do people feel about a changing world?</h2><p>Solastalgia is the grief of watching your home change. This map gathers what published surveys have asked different generations about climate change: whether they feel <b>worried, afraid of the future, anxious, powerless, distressed, or hesitant to have children.</b></p></div></section>';
   STORY.forEach((f,i)=>{
     const fe=F[f],ft=feelFacts(f),b=ft.best;
     h+='<section class="sstep" data-i="'+(i+1)+'"><div class="sin"><h2 style="color:color-mix(in srgb,'+fe.color+' 70%,#000)">'+esc(fe.name)+'</h2>'

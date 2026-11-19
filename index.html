@@ -582,9 +582,10 @@ function draw(){
     });
   }
   // a picked country with no figure for this feeling still gets an emphasis here: a halo and a dashed outline, so you can see where it is
-  if(FL&&selPlace&&!sv.some(v=>v.a.place===selPlace)){
+  if((FL||EVO)&&selPlace&&!(FL&&sv.some(v=>v.a.place===selPlace))){
     const sa=D.auras.find(x=>x.place===selPlace&&x.shape&&SH[x.shape]);
-    if(sa){const b=projectShape(SH[sa.shape],1);if(b.parts.length){ctx.globalAlpha=alphaOf(b.maxz);halo(b.parts,2);pathParts(b.parts);ctx.fillStyle='rgba(249,249,249,.9)';ctx.fill();ctx.save();ctx.setLineDash([4,3]);ctx.lineWidth=1.6;ctx.strokeStyle=INK;ctx.stroke();ctx.restore();ctx.globalAlpha=1}}
+    const evHas=EVO&&sa&&D.events.some(e=>(e.shapes||[]).some(k=>k.split('-')[0]===sa.shape.split('-')[0]));
+    if(sa&&!evHas){const b=projectShape(SH[sa.shape],1);if(b.parts.length){ctx.globalAlpha=alphaOf(b.maxz);halo(b.parts,2);pathParts(b.parts);ctx.fillStyle='rgba(249,249,249,.9)';ctx.fill();ctx.save();ctx.setLineDash([4,3]);ctx.lineWidth=1.6;ctx.strokeStyle=INK;ctx.stroke();ctx.restore();ctx.globalAlpha=1}}
   }
   // study exists, no figure: dashed outline only
   gv.forEach(v=>{
@@ -1026,7 +1027,10 @@ function updateCaps(){
   let lines=1;
   MINIS.forEach(g=>{
     let t='',cnt=false;
-    if(g.feel==='__ev')t=state.sel&&state.sel.type==='event'?esc(state.sel.e.label):D.events.length+' cases',cnt=!(state.sel&&state.sel.type==='event');
+    if(g.feel==='__ev'){
+      const sa=sel&&D.auras.find(x=>x.place===sel&&x.shape),none=sa&&!D.events.some(e=>(e.shapes||[]).some(k=>k.split('-')[0]===sa.shape.split('-')[0]));
+      if(none)t='no case',cnt=false;else t=state.sel&&state.sel.type==='event'?esc(state.sel.e.label):D.events.length+' cases',cnt=!(state.sel&&state.sel.type==='event');
+    }
     else if(sel&&!(sel==='US'&&state.split!=='all')){
       const as=D.auras.filter(a=>a.place===sel&&auraOn(a)&&!a.splitDim).sort((p,q)=>RANK0[p.pop]-RANK0[q.pop]);
       const vals=as.map(a=>{const m=mergeF(a.layers.filter(l=>l.f===g.feel));return m.length?{a,t:pv(m[0])}:null}).filter(Boolean);

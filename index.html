@@ -1348,7 +1348,7 @@ function wstoryHTML(){
     const placed=st.ws.filter(w=>w.places.length).length,free=st.ws.length-placed;
     h+='<section class="sstep" data-i="'+(i+1)+'"><div class="sin">'+(st.lab?'<p class="lab">'+esc(st.lab)+'</p>':'')+'<h2>'+esc(st.h)+'</h2><p>'+esc(st.p)+'</p><p class="wts">'+st.ws.map(chip).join('')+'</p><p class="wm">'+placed+(placed===1?' word is':' words are')+' drawn on the globe'+(free?'; '+free+(free===1?' has':' have')+' no single place, so '+(free===1?'it is':'they are')+' only listed':'')+'.</p></div></section>';
   });
-  h+='<section class="sstep" data-i="'+(wSteps.length+1)+'"><div class="sin"><p class="lab">All together</p><h2>Every word, on one globe</h2><p>'+WORDS.length+' words, '+WORDS.filter(w=>w.places.length).length+' of them with a place. Drag the globe and hover a dot to read the words. A dot is the place a source names, not the only place a word is used.</p><p><button type="button" class="tg" data-go="words">Open the word list</button> <button type="button" class="tg" data-go="feel">Open the distress grid</button></p></div></section></div>';
+  h+='<section class="sstep" data-i="'+(wSteps.length+1)+'"><div class="sin"><h2>All together</h2><p>'+WORDS.length+' words, '+WORDS.filter(w=>w.places.length).length+' of them with a place. Drag the globe and hover a dot to read the words. A dot is the place a source names, not the only place a word is used.</p><p><button type="button" class="tg" data-go="words">Open the word list</button> <button type="button" class="tg" data-go="feel">Open the distress grid</button></p></div></section></div>';
   return h;
 }
 function setWStep(i){

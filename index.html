@@ -176,7 +176,7 @@ ul.lim2{padding-left:18px;margin:0}ul.lim2 li{margin:0 0 9px;font-size:14.5px}
 .sstep .fd{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:7px;vertical-align:-1px}
 @media(max-width:960px){.sheet.story .r-mid,.sheet.wstory .r-mid{display:block}.sheet.story .c-stage,.sheet.wstory .c-stage{position:sticky;top:0;z-index:5;background:var(--bg)}.sheet.story .c-stage .stage,.sheet.wstory .c-stage .stage{height:42vh;min-height:260px}.sheet.story .sstep,.sheet.wstory .sstep{min-height:64vh}}
 .wts{display:flex;flex-wrap:wrap;gap:6px}
-.wt{display:inline-block;border:1px solid var(--ink);padding:3px 9px;font-size:13px;color:var(--ink)}
+.wt{display:inline-block;border:1px solid var(--ink);padding:3px 9px;font-size:13px;color:var(--ink);background:none;font-family:inherit;cursor:pointer;text-align:left;min-height:0}.wt:hover{background:rgba(42,45,160,.1)}.wt.on{background:var(--ink);color:var(--paper)}.wt.s.on{background:var(--warm);color:var(--paper)}
 .wt.s{border-color:var(--warm);color:var(--warm)}
 .wt i{font-style:normal;opacity:.7;margin-left:5px}
 .sheet.wstory .c-time{display:none!important}
@@ -1135,6 +1135,13 @@ function selectWord(id){haltSpin();
   if(w.places.length){const p=w.places[0];fly(p.lat,p.lon,1)}else stopSpin();
   renderPanel();dirty=true;
 }
+function wPickWord(id){const w=WBY[id];if(!w)return;haltSpin();
+  if(wFilter)wFilter.add(id);
+  if(w.places.length){const p=w.places[0];state.sel={type:'word',id};showPick({kind:'word',ws:[w],place:p,pid:p.id})}
+  else{state.sel=null;const q=$('#pick');q.innerHTML='<button type="button" class="x pk" aria-label="Close">Close</button>'+wordCard(w).replace(/<button type="button" data-act="clear">[^<]*<\/button>/g,'');q.hidden=false;q.scrollTop=0}
+  detail.querySelectorAll('.wt').forEach(b=>b.classList.toggle('on',b.dataset.w===id));dirty=true;
+}
+document.addEventListener('click',e=>{const b=e.target.closest('.wt[data-w]');if(b&&state.mode==='wstory')wPickWord(b.dataset.w)});
 function selectWordPlace(pid){haltSpin();
   const ws=WORDS.filter(w=>wShown(w)&&w.places.some(p=>p.id===pid));
   if(ws.length===1){selectWord(ws[0].id);return}
@@ -1335,7 +1342,7 @@ function wStorySteps(){
 }
 function wstoryHTML(){
   wSteps=wStorySteps();
-  const chip=w=>'<span class="wt'+(w.south?' s':'')+'">'+esc(w.term)+(w.year!=null?'<i>'+w.year+'</i>':'')+'</span>';
+  const chip=w=>'<button type="button" class="wt'+(w.south?' s':'')+'" data-w="'+w.id+'">'+esc(w.term)+(w.year!=null?'<i>'+w.year+'</i>':'')+'</button>';
   let h='<div class="story"><section class="sstep" data-i="0"><div class="sin"><p class="lab">Scroll</p><h2>One globe, many words</h2><p>This is about words. As the climate changed, people found or made words for what it does to them: grief, anxiety, loss of place, fear of storms and drought. Some are new terms, others are older words that people already had in their own languages.</p><p>Each step adds a group of words to the globe, at the place where the source says each one comes from. Orange marks low- and middle-income countries, blue high-income ones. Some words have no single place, and are named here but not drawn.</p></div></section>';
   wSteps.forEach((st,i)=>{
     const placed=st.ws.filter(w=>w.places.length).length,free=st.ws.length-placed;
